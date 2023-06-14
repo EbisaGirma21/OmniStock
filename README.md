@@ -33,8 +33,10 @@ OmniStock is a powerful multi-store inventory management system designed to stre
 - Node.js
 - Express.js
 - MongoDB
-- HTML/CSS
-- JavaScript
+- React.js
+- Cloudinary
+- MUI
+- Tailwind.css and others
 
 ## Contributing
 
