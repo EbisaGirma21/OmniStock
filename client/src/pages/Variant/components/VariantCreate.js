@@ -1,7 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Modal from "../../../components/UI/Modal";
-import { Box, TextField } from "@mui/material";
+import { Autocomplete, Box, TextField } from "@mui/material";
 import VariantsContext from "../../../context/VariantContext";
+import ProductCatagorysContext from "../../../context/ProductCatagoryContext";
 
 const VariantCreate = ({ handleClose, open }) => {
   const [user] = useState(JSON.parse(localStorage.getItem("user")));
@@ -12,7 +13,6 @@ const VariantCreate = ({ handleClose, open }) => {
   const [productName, setProductName] = useState("");
   const [brandName, setBrandName] = useState("");
   const [modelName, setModelName] = useState("");
-  const [variantName, setVariantName] = useState("");
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
   const [price, setPrice] = useState("");
@@ -24,19 +24,37 @@ const VariantCreate = ({ handleClose, open }) => {
 
   // Context creation
   const { createVariant } = useContext(VariantsContext);
+  const { productCatagories, fetchProductCatagories } = useContext(
+    ProductCatagorysContext
+  );
+
+  useEffect(() => {
+    productCatagory && fetchProductCatagories();
+    // eslint-disable-next-line
+  }, [productCatagory]);
+
+  const filteredPCatagory = productCatagories.filter((pCatagory) => {
+    return pCatagory._id === productCatagory;
+  });
+
+  const productOption = filteredPCatagory[0]
+    ? filteredPCatagory[0].productNames.map((productName) => ({
+        label: `${productName.name}`,
+        value: `${productName.name}`,
+      }))
+    : [];
 
   // Change handler functions
-  const handleProductNameChange = (e) => {
-    setProductName(e.target.value);
+  const handleProductNameChange = (event, newValue) => {
+    const selectedProductName = newValue ? newValue.value : "";
+    setProductName(selectedProductName);
   };
+
   const handleBrandNameChange = (e) => {
     setBrandName(e.target.value);
   };
   const handleModelNameChange = (e) => {
     setModelName(e.target.value);
-  };
-  const handleVariantNameChange = (e) => {
-    setVariantName(e.target.value);
   };
   const handleSizesChange = (e) => {
     setSizes(e.target.value.split(",").map((size) => size.trim()));
@@ -77,27 +95,10 @@ const VariantCreate = ({ handleClose, open }) => {
   // Submit function
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(
-      productName,
-      brandName,
-      modelName,
-      variantName,
-      imageFiles,
-      sizes,
-      colors,
-      price,
-      amount,
-      condition,
-      gender,
-      shortDescription,
-      store,
-      productCatagory
-    );
     createVariant(
       productName,
       brandName,
       modelName,
-      variantName,
       imageFiles,
       sizes,
       colors,
@@ -109,8 +110,6 @@ const VariantCreate = ({ handleClose, open }) => {
       store,
       productCatagory
     );
-
-    setVariantName("");
     setImageFiles([]);
   };
 
@@ -125,14 +124,24 @@ const VariantCreate = ({ handleClose, open }) => {
       <form encType="multipart/form-data">
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Box sx={{ m: 1, textAlign: "center" }}>
-            <TextField
-              margin="dense"
-              label="Product Name"
-              type="text"
-              sx={{ minWidth: 300 }}
-              variant="standard"
+            <Autocomplete
+              options={productOption}
               value={productName}
-              onChange={handleProductNameChange}
+              onChange={(event, newValue) =>
+                handleProductNameChange(event, newValue)
+              }
+              freeSolo
+              disableClearable
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  margin="dense"
+                  label="Product Name"
+                  type="text"
+                  variant="standard"
+                  style={{ width: "300px" }}
+                />
+              )}
             />
             <TextField
               margin="dense"
@@ -142,7 +151,7 @@ const VariantCreate = ({ handleClose, open }) => {
               variant="standard"
               value={modelName}
               onChange={handleModelNameChange}
-            />{" "}
+            />
             <TextField
               margin="dense"
               label="Sizes"
@@ -189,15 +198,6 @@ const VariantCreate = ({ handleClose, open }) => {
               variant="standard"
               value={brandName}
               onChange={handleBrandNameChange}
-            />
-            <TextField
-              margin="dense"
-              label="Variant Name"
-              type="text"
-              sx={{ minWidth: 300 }}
-              variant="standard"
-              value={variantName}
-              onChange={handleVariantNameChange}
             />
             <TextField
               margin="dense"

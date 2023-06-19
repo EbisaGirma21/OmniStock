@@ -7,7 +7,6 @@ const cloudinary = require("../utils/cloudinary");
 // get all Variants
 const getVariants = async (req, res) => {
   const variants = await Variant.find({}).sort({ createdAt: -1 });
-
   const variantsData = await Promise.all(
     variants.map(async (variant) => {
       const productCatagory = await ProductCatagory.findById(
@@ -49,7 +48,6 @@ const createVariant = async (req, res) => {
     productName,
     brandName,
     modelName,
-    variantName,
     images,
     sizes,
     colors,
@@ -62,9 +60,6 @@ const createVariant = async (req, res) => {
     productCatagory,
   } = req.body;
   let emptyFields = [];
-  if (!variantName) {
-    emptyFields.push("variantName");
-  }
 
   if (emptyFields.length > 0) {
     return res
@@ -89,7 +84,6 @@ const createVariant = async (req, res) => {
       productName,
       brandName,
       modelName,
-      variantName,
       images: uploadedImages,
       sizes,
       colors,
@@ -101,6 +95,41 @@ const createVariant = async (req, res) => {
       store,
       productCatagory,
     });
+
+    // reupload emage
+    const uploaded = [];
+    for (const image of images) {
+      const result = await cloudinary.uploader.upload(image, {
+        folder: "psms",
+      });
+      uploaded.push({
+        public_id: result.public_id,
+        url: result.secure_url,
+      });
+      break;
+    }
+
+    // Push image to productNames
+    const productCatagorys = await ProductCatagory.findById(productCatagory);
+    if (!productCatagorys) {
+      return res.status(404).json({ error: "ProductCatagory not found" });
+    }
+
+    const productNamesWithImage = productCatagorys.productNames.map(
+      (product) => {
+        if (product.name === productName) {
+          return {
+            ...product.toObject(),
+            image: uploaded[0],
+          };
+        }
+        return product;
+      }
+    );
+
+    productCatagorys.productNames = productNamesWithImage;
+    await productCatagorys.save();
+
     res.status(200).json(variant);
   } catch (error) {
     res.status(400).json({ error: error.message });

@@ -39,7 +39,7 @@ function NavBar() {
       sx={{
         height: "70px",
         display: "flex",
-        backgroundColor: "#E9EDF4",
+        backgroundColor: "#5e35b1",
         width: isSidebarOpen
           ? `calc(100% - ${drawerWidth}px)`
           : `calc(100% - ${collapse}px)`,
@@ -58,7 +58,7 @@ function NavBar() {
             <MenuIcon
               className="w-12 h-9 mr-2"
               sx={{
-                color: "#A1A9E1",
+                color: "#fff",
               }}
             />
           ) : (
@@ -70,7 +70,7 @@ function NavBar() {
             />
           )}
         </IconButton>
-        <Typography sx={{ color: "#576482" }}>
+        <Typography sx={{ color: "#fff" }}>
           {user.role !== "sm" ? "PStore" : stores.storeName}
         </Typography>
 
@@ -81,8 +81,12 @@ function NavBar() {
             alignItems: "center",
           }}
         >
-          <Box sx={{ color: "#000", padding: 3 }}>{user.email}</Box>
-          <Button variant="outlined" onClick={handleClick}>
+          <Box sx={{ color: "#fff", padding: 3 }}>{user.email}</Box>
+          <Button
+            variant="outlined"
+            onClick={handleClick}
+            sx={{ color: "#fff" }}
+          >
             Logout
           </Button>
         </Box>

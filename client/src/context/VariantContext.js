@@ -11,11 +11,32 @@ const VariantProvider = ({ children }) => {
     setVariants(response.data);
   };
 
-  const editVariantById = async (id, newvariantName) => {
+  const editVariantById = async (
+    id,
+    newProductName,
+    newBrandName,
+    newModelName,
+    newSizes,
+    newColors,
+    newPrice,
+    newAmount,
+    newCondition,
+    newGender,
+    newShortDescription
+  ) => {
     const response = await axios.patch(
       `http://localhost:4040/api/variant/${id}`,
       {
-        variantName: newvariantName,
+        productName: newProductName,
+        brandName: newBrandName,
+        modelName: newModelName,
+        sizes: newSizes,
+        colors: newColors,
+        price: newPrice,
+        amount: newAmount,
+        condition: newCondition,
+        gender: newGender,
+        shortDescription: newShortDescription,
       }
     );
 
@@ -42,7 +63,6 @@ const VariantProvider = ({ children }) => {
     productName,
     brandName,
     modelName,
-    variantName,
     images,
     sizes,
     colors,
@@ -58,7 +78,6 @@ const VariantProvider = ({ children }) => {
       productName,
       brandName,
       modelName,
-      variantName,
       images,
       sizes,
       colors,
@@ -71,8 +90,7 @@ const VariantProvider = ({ children }) => {
       productCatagory,
     });
 
-    const updatedVariants = [...variants, response.data];
-    setVariants(updatedVariants);
+    fetchVariants();
   };
   const valueToShare = {
     variants,

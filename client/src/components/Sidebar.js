@@ -18,6 +18,7 @@ import TogglePovider from "../context/SidebarContext";
 import SellIcon from "@mui/icons-material/Sell";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
 import MoveDownIcon from "@mui/icons-material/MoveDown";
+import styled from "@emotion/styled";
 
 const extended = 260;
 const collapse = 70;
@@ -30,72 +31,160 @@ function SideBar() {
     handleMouseLeave,
   } = useContext(TogglePovider);
 
+  const [isActivePage, setIsActivePage] = useState(
+    JSON.parse(localStorage.getItem("path"))
+  );
+
+  // custom style
+  // list item style
+  const listStyle = {
+    display: isSidebarOpen || isDrawerHover ? "flex" : "none",
+    alignItems: "center",
+    fontFamily: "Poppins",
+    fontWeight: 500,
+    whiteSpace: "nowrap",
+    "&:hover": {
+      color: "#774FBF",
+    },
+  };
+
+  // link
+  const styledLink = {
+    textDecoration: "none",
+    margin: "0px 0px 4px",
+    padding: 0,
+  };
+
+  // styled List
+  const styledList = {
+    paddingTop: "0",
+    padding: "0",
+    marginLeft: "3px",
+    marginRight: "3px",
+    paddingBottom: isSidebarOpen ? "8px" : "0px",
+  };
+
+  // button in Link
+  const styledButton = {
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    textAlign: "left",
+    color: "#000",
+    background: "#fff",
+    borderRadius: 2,
+    height: "46px",
+    marginBottom: "3px",
+    padding: isSidebarOpen ? "10px 16px 10px 24px" : "15px",
+    "&:hover": {
+      background: "#EDE7F6",
+      borderRadius: 2,
+      color: "#774FBF",
+    },
+  };
+
+  const styledActiveButton = {
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    textAlign: "left",
+    height: "46px",
+    padding: isSidebarOpen ? "10px 16px 10px 24px" : "15px",
+    background: "#EDE7F6",
+    borderRadius: 2,
+    marginBottom: "3px",
+    color: "#774FBF",
+    "&:hover": {
+      background: "#EDE7F6",
+      borderRadius: 2,
+      color: "#774FBF",
+    },
+  };
+
+  // icon wrapper
+
+  const StyledIconWrapper = styled(ListItemIcon)({
+    minWidth: "36px",
+    color: "#5e35b1",
+  });
+
+  // Styled text
+  const itemTextStyle = {
+    fontFamily: "Poppins",
+    fontWeight: 400,
+  };
+
   const [menuItems] = useState(() => getMenuItems());
   function getMenuItems() {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user.role === "admin" || user.role === "super") {
       return [
         {
-          text: "Dashboard",
-          icon: <Dashboard color="primary" />,
+          text: <Typography sx={itemTextStyle}>Dashboard</Typography>,
+          icon: <Dashboard />,
           path: "/dashboard",
         },
         {
-          text: "Store",
-          icon: <Store color="primary" />,
+          text: <Typography sx={itemTextStyle}>Store</Typography>,
+          icon: <Store />,
           path: "store",
         },
         {
-          text: "Product Catagory",
-          icon: <Store color="primary" />,
+          text: <Typography sx={itemTextStyle}>Product Catagory</Typography>,
+          icon: <Store />,
           path: "productCatagory",
         },
         {
-          text: "Users",
-          icon: <SupervisedUserCircleIcon color="primary" />,
+          text: <Typography sx={itemTextStyle}>Users</Typography>,
+          icon: <SupervisedUserCircleIcon />,
           path: "user",
         },
         {
-          text: "Sells",
-          icon: <SellIcon color="primary" />,
+          text: <Typography sx={itemTextStyle}>Sells</Typography>,
+          icon: <SellIcon />,
           path: "sell",
         },
         {
-          text: "Purchases",
-          icon: <MoveDownIcon color="primary" />,
+          text: <Typography sx={itemTextStyle}>Purchases</Typography>,
+          icon: <MoveDownIcon />,
           path: "purchase",
         },
         {
-          text: "Transfer",
-          icon: <ImportExportIcon color="primary" />,
+          text: <Typography sx={itemTextStyle}>Transfer</Typography>,
+
+          icon: <ImportExportIcon />,
           path: "transfer",
         },
       ];
     } else {
       return [
         {
-          text: "Dashboard",
-          icon: <Dashboard color="primary" />,
+          text: <Typography sx={itemTextStyle}>Dashboard</Typography>,
+          icon: <Dashboard />,
           path: "/dashboard",
         },
         {
-          text: "Product Catagory",
-          icon: <Store color="primary" />,
+          text: <Typography sx={itemTextStyle}>Product Catagory</Typography>,
+          icon: <Store />,
           path: "productCatagory",
         },
         {
-          text: "Sells",
-          icon: <SellIcon color="primary" />,
+          text: <Typography sx={itemTextStyle}>Sells</Typography>,
+          icon: <SellIcon />,
           path: "sell",
         },
         {
-          text: "Purchases",
-          icon: <MoveDownIcon color="primary" />,
+          text: <Typography sx={itemTextStyle}>Purchases</Typography>,
+          icon: <MoveDownIcon />,
           path: "purchase",
         },
       ];
     }
   }
+  const handleClick = (path) => {
+    localStorage.setItem("path", JSON.stringify(path));
+    setIsActivePage(JSON.parse(localStorage.getItem("path")));
+  };
 
   return (
     <Drawer
@@ -115,41 +204,43 @@ function SideBar() {
         className="flex items-center justify-center"
         style={{
           marginBottom: isSidebarOpen || isDrawerHover ? 5 : 19,
-          marginTop: isSidebarOpen || isDrawerHover ? 18 : 13,
-          height: "47px",
+          height: "70px",
+          backgroundColor: "#5e35b1",
+          color: "#fff",
         }}
       >
         <LocalGroceryStoreOutlinedIcon className="w-8 h-8 mr-1" />
         <Typography
-          variant="h4"
+          variant="h6"
           sx={{
-            display: isSidebarOpen || isDrawerHover ? "block" : "none",
+            display: isSidebarOpen || isDrawerHover ? "flex" : "none",
             cursor: "pointer",
+            justifyContent: "start",
           }}
         >
-          <Link to="/dashboard">PStore</Link>
+          <Link to="/dashboard">OmniStock</Link>
         </Typography>
       </Box>
       <Divider />
 
       {/* list of admin page */}
-      <List>
+      <List sx={styledList}>
         {menuItems.map((item) => (
-          <Link
-            to={item.path}
-            key={item.text}
-            className="flex  justify-center items-center"
-          >
-            <ListItemButton>
-              <ListItemIcon className="ml-1">{item.icon}</ListItemIcon>
+          <Link to={item.path} key={item.path} style={styledLink}>
+            <ListItemButton
+              key={item.path}
+              onClick={() => handleClick(item.path)}
+              sx={
+                isActivePage === item.path ? styledActiveButton : styledButton
+              }
+              className="flex items-center"
+            >
+              <StyledIconWrapper key={item.text}>{item.icon}</StyledIconWrapper>
               <ListItemText
                 primary={item.text}
-                sx={{
-                  "&:hover": {
-                    color: "#4454C3",
-                  },
-                  display: isSidebarOpen || isDrawerHover ? "block" : "none",
-                }}
+                key={item.path}
+                sx={listStyle}
+                className="my-auto"
               />
             </ListItemButton>
           </Link>

@@ -7,11 +7,14 @@ import AddIcon from "@mui/icons-material/Add";
 import { Box, Button, Typography } from "@mui/material";
 import ProductCatagoryCreate from "./components/ProductCatagoryCreate";
 import { useState } from "react";
+import ProductCatagoryTable from "./components/ProductCatagoryTable";
 
 const ProductCatagory = () => {
   const [open, setOpen] = useState(false);
   const path = "http://localhost:3000/productCatagory";
   const user = JSON.parse(localStorage.getItem("user"));
+  const [viewMode, setViewMode] = useState("card");
+
   const currentUrl = window.location.href;
   const handleOpen = () => {
     setOpen(true);
@@ -43,21 +46,38 @@ const ProductCatagory = () => {
       <Box sx={{ m: 1 }}>
         <Typography>ProductCatagory</Typography>
       </Box>
-      {(user.role === "super" || user.role === "admin") &&
-        currentUrl === path && (
-          <Button
-            onClick={handleOpen}
-            variant="contained"
-            className="add__button"
-          >
-            <AddIcon />
-            New
-          </Button>
-        )}
-      <ProductCatagoryCreate open={open} handleClose={handleClose} />
-      <Grid container spacing={4}>
-        {renderedProductCatagorys}
-      </Grid>
+      <Box sx={{ display: "flex" }} className='my-2'>
+        {(user.role === "super" || user.role === "admin") &&
+          currentUrl === path && (
+            <Button onClick={handleOpen} variant="contained">
+              <AddIcon />
+              New
+            </Button>
+          )}
+        <Button
+          onClick={() => {
+            if (viewMode === "card") {
+             
+              setViewMode("table");
+            } else {
+             
+              setViewMode("card");
+            }
+          }}
+          variant="contained"
+          sx={{ marginLeft: 2 }}
+        >
+          Change Display Mode
+        </Button>
+        <ProductCatagoryCreate open={open} handleClose={handleClose} />
+      </Box>
+      {viewMode === "card" ? (
+        <Grid container spacing={1}>
+          {renderedProductCatagorys}
+        </Grid>
+      ) : (
+        <ProductCatagoryTable />
+      )}
     </>
   );
 };

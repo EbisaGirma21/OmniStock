@@ -16,7 +16,6 @@ const getSells = async (req, res) => {
       const productCatagory = await ProductCatagory.findById(
         variant.productCatagory.toString()
       );
-      // console.log(variant, user, stores);
       return {
         sellerName: `${user.firstName}(${user.email})`,
         storeName: stores
@@ -25,8 +24,7 @@ const getSells = async (req, res) => {
         productCatagory: productCatagory.productCatagoryName,
         product: variant.productName,
         brand: variant.brandName,
-        model: variant.modelName,
-        store:stores._id,
+        store: stores._id,
         ...sell._doc,
       };
     })
@@ -130,7 +128,7 @@ const createSell = async (req, res) => {
     const sell = await Sell.create({
       seller,
       productCatagory: productCatagory.productCatagoryName,
-      variant: vari.variantName,
+      model: vari.modelName,
       variantId: variant,
       price,
       amount,

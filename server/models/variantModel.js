@@ -14,10 +14,6 @@ const VariantSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    variantName: {
-      type: String,
-      required: true,
-    },
     images: [
       {
         public_id: {
@@ -29,7 +25,7 @@ const VariantSchema = mongoose.Schema(
           required: true,
         },
       },
-    ], 
+    ],
     sizes: [
       {
         type: Number,
@@ -74,7 +70,7 @@ const VariantSchema = mongoose.Schema(
   { timestamps: true }
 );
 // Ensure academicYear is unique across documents
-// VariantSchema.index({ variantName: 1, model: 1 }, { unique: true });
+// VariantSchema.index({ modelName: 1, store: 1 }, { unique: true });
 
 const Variant = mongoose.model("Variant", VariantSchema);
 module.exports = Variant;

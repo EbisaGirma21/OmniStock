@@ -3,51 +3,62 @@ const Store = require("../models/storeModel");
 
 // get all Brands
 const transferVariant = async (req, res) => {
-  //   const variants = await Variant.find({}).sort({ createdAt: -1 });
-  const { amount, variant, store } = req.body;
+  try {
+    const { amounts, variant, store } = req.body;
 
-  const stores = Store.findById(store);
-
-  const exists = await Variant.findOne({
-    variantName: variant.variantName,
-    store: store,
-  });
-  let variants = [];
-  if (exists) {
-    variants = await Variant.findOneAndUpdate(
-      { variantName: variant.variantName, store: store },
-      { $inc: { amount: +amount } }
-    );
-  } else {
-    console.log(variant);
-    variants = await Variant.create({
-      productName: variant.productName,
-      brandName: variant.brandName,
-      modelName: variant.modelName,
-      variantName: variant.variantName,
-      images: variant.images,
-      sizes: variant.sizes,
-      colors: variant.colors,
-      price: variant.price,
-      amount: amount,
-      condition: variant.condition,
-      gender: variant.gender,
-      shortDescription: variant.shortDescription,
-      productCatagory: variant.productCatagoryId,
-      store: store,
-    });
-  }
-  const reducedVariant = await Variant.findOneAndUpdate(
-    { _id: variant._id },
-    {
-      amount: +variant.amount - +amount,
+    const storeExists = await Store.findById(store);
+    if (!storeExists) {
+      return res.status(400).json({ error: "No such store" });
     }
-  );
 
-  if (!variants) {
-    return res.status(400).json({ error: "No such store" });
+    const updatedVariants = await Promise.all(
+      variant.map(async (sVariant, index) => {
+        const exists = await Variant.findOne({
+          modelName: sVariant.modelName,
+          store: store,
+        });
+
+        if (exists) {
+          return Variant.findOneAndUpdate(
+            { modelName: sVariant.modelName, store: store },
+            { $inc: { amount: +amounts[index] } },
+            { new: true }
+          );
+        } else {
+          return Variant.create({
+            productName: sVariant.productName,
+            brandName: sVariant.brandName,
+            modelName: sVariant.modelName,
+            images: sVariant.images,
+            sizes: sVariant.sizes,
+            colors: sVariant.colors,
+            price: sVariant.price,
+            amount: amounts[index],
+            condition: sVariant.condition,
+            gender: sVariant.gender,
+            shortDescription: sVariant.shortDescription,
+            productCatagory: sVariant.productCatagoryId,
+            store: store,
+          });
+        }
+      })
+    );
+
+    const reducedVariants = await Promise.all(
+      variant.map((sVariant, index) => {
+        return Variant.findOneAndUpdate(
+          { _id: sVariant._id },
+          { $inc: { amount: -amounts[index] } },
+          { new: true }
+        );
+      })
+    );
+
+    res.status(200).json({ updatedVariants, reducedVariants });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-  res.status(200).json(variants);
 };
 
 module.exports = { transferVariant };

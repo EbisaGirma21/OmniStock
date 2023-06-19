@@ -4,10 +4,10 @@ import axios from "axios";
 const TransferContext = createContext();
 
 const TransferProvider = ({ children }) => {
-  const transferByName = async (variant, amount, store) => {
+  const transferByName = async (variant, amounts, store) => {
     const response = await axios.patch(`http://localhost:4040/api/transfer/`, {
       variant,
-      amount,
+      amounts,
       store,
     });
   };

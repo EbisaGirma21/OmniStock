@@ -24,7 +24,6 @@ const getPurchases = async (req, res) => {
         productCatagory: productCatagory.productCatagoryName,
         product: variant.productName,
         brand: variant.brandName,
-        model: variant.modelName,
         store: stores._id,
         ...purchase._doc,
       };
@@ -84,7 +83,7 @@ const createPurchase = async (req, res) => {
     const purchase = await Purchase.create({
       purchaser,
       productCatagory: productCatagory.productCatagoryName,
-      variant: vari.variantName,
+      model: vari.modelName,
       variantId: variant,
       price,
       amount,

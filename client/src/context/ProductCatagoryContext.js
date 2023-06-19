@@ -17,11 +17,16 @@ const ProductCatagoryProvider = ({ children }) => {
     setProductCatagories(response.data);
   };
 
-  const editProductCatagoryById = async (id, newproductCatagoryName) => {
+  const editProductCatagoryById = async (
+    id,
+    newproductCatagoryName,
+    newProductNames
+  ) => {
     const response = await axios.patch(
       `http://localhost:4040/api/productCatagory/${id}`,
       {
         productCatagoryName: newproductCatagoryName,
+        productNames: newProductNames,
       }
     );
 
@@ -47,9 +52,15 @@ const ProductCatagoryProvider = ({ children }) => {
     setProductCatagories(updatedProductCatagorys);
   };
 
-  const createProductCatagory = async (productCatagoryName, image, store) => {
+  const createProductCatagory = async (
+    productCatagoryName,
+    image,
+    store,
+    productNames
+  ) => {
     setIsLoading(true);
     setError(null);
+
     try {
       const response = await fetch(
         "http://localhost:4040/api/productCatagory",
@@ -59,6 +70,7 @@ const ProductCatagoryProvider = ({ children }) => {
             productCatagoryName,
             image,
             store,
+            productNames,
           }),
           headers: {
             "Content-Type": "application/json",

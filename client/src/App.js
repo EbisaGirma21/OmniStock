@@ -43,7 +43,16 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={
+              <ProductCatagoryProvider>
+                <VariantProvider>
+                  <Home />
+                </VariantProvider>
+              </ProductCatagoryProvider>
+            }
+          />
           <Route path="login" element={<Login />} />
           <Route
             path="/"
@@ -152,9 +161,11 @@ function App() {
                   element={
                     <SellProvider>
                       <PurchaseProvider>
-                        <VariantProvider>
-                          <Variant />
-                        </VariantProvider>
+                        <ProductCatagoryProvider>
+                          <VariantProvider>
+                            <Variant />
+                          </VariantProvider>
+                        </ProductCatagoryProvider>
                       </PurchaseProvider>
                     </SellProvider>
                   }

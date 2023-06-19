@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import {
   Box,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -21,15 +22,16 @@ import VariantsContext from "../../context/VariantContext";
 import ProductCatagoryContext from "../../context/ProductCatagoryContext";
 import TransferContext from "../../context/TransferContext";
 import TransferDialog from "./components/Dialog";
+import ClearIcon from "@mui/icons-material/Clear";
 
 export default function Transfer() {
   const [checked, setChecked] = useState([]);
   const [senderStore, setSenderStore] = useState("");
   const [receiverStore, setReceiverStore] = useState("");
   const [catagory, setCatagory] = useState("");
-  const [amount, setAmount] = useState("");
+  const [amounts, setAmounts] = useState([]);
   const [dialogOpen, setdDialogOpen] = useState(false);
-  const [selectedVariant, setSelectedVariant] = useState("");
+  const [checkedVariant, setCheckedVariant] = useState([]);
 
   const { stores, setStores } = useContext(StorePageProvider);
   const { variants, fetchVariants } = useContext(VariantsContext);
@@ -60,7 +62,7 @@ export default function Transfer() {
   useEffect(() => {
     catagory && fetchVariants();
     // eslint-disable-next-line
-  }, [catagory, amount]);
+  }, [catagory, amounts]);
 
   const senderVariants = variants.filter((variant) => {
     return (
@@ -79,6 +81,7 @@ export default function Transfer() {
     value: productCatagory._id,
   }));
 
+  // check controller
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
@@ -90,7 +93,12 @@ export default function Transfer() {
     }
 
     setChecked(newChecked);
-    setSelectedVariant(value);
+
+    const filteredVariants = variants.filter((variant) => {
+      return newChecked.includes(variant._id);
+    });
+
+    setCheckedVariant(filteredVariants);
   };
 
   const handleSenderStore = (e) => {
@@ -107,16 +115,16 @@ export default function Transfer() {
     setCatagory(e.target.value);
   };
 
-  const handleTrasferedamount = (e) => {
-    setAmount(e.target.value);
+  const handleTrasferedamount = (event, variantIndex) => {
+    const updatedAmounts = [...amounts];
+    updatedAmounts[variantIndex] = event.target.value;
+    setAmounts(updatedAmounts);
   };
 
-  const transferedVariant = senderVariants.filter((sVariant) => {
-    return sVariant._id === checked[0];
-  });
-
   const receiverVariants = variants.filter((variant) => {
-    return variant.store === receiverStore;
+    return (
+      variant.store === receiverStore && variant.productCatagoryId === catagory
+    );
   });
 
   const handleDialogOpen = () => {
@@ -126,36 +134,49 @@ export default function Transfer() {
     setdDialogOpen(false);
   };
   const handleSubmit = () => {
-    transferByName(transferedVariant[0], amount, receiverStore);
-    setAmount("");
+    transferByName(checkedVariant, amounts, receiverStore);
+    fetchVariants();
+    setAmounts([]);
   };
 
   const customList = (variants) => (
-    <Paper sx={{ width: 300, height: 450, overflow: "auto" }}>
+    <Paper sx={{ width: 600, height: 500, overflow: "auto" }}>
       <List dense component="div" role="list">
         {variants.map((variant) => {
           const labelId = `transfer-list-item-${variant._id}-label`;
 
           return (
             <ListItem
-              key={variant.variantName}
+              className=" cursor-pointer"
+              key={variant._id}
               role="listitem"
-              onClick={handleToggle(variant.variantName)}
+              onClick={
+                variant.store === senderStore ? handleToggle(variant._id) : null
+              }
             >
               <ListItemIcon>
-                <Checkbox
-                  checked={selectedVariant === variant.variantName}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{
-                    "aria-labelledby": labelId,
-                  }}
-                />
+                {variant.store === senderStore && (
+                  <Checkbox
+                    checked={checked.indexOf(variant._id) !== -1}
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{
+                      "aria-labelledby": labelId,
+                    }}
+                  />
+                )}
               </ListItemIcon>
-              <ListItemText
-                id={labelId}
-                primary={`${variant.variantName} ${variant.amount}`}
-              />
+              <ListItemText id={labelId}>
+                <Box sx={{ display: "flex" }}>
+                  <Typography sx={{ fontWeight: "bold" }}>Name: </Typography>
+                  <Typography>{variant.modelName}</Typography>
+
+                  <Typography sx={{ fontWeight: "bold", ml: 4 }}>
+                    Amount:
+                  </Typography>
+                  <Typography>{variant.amount}</Typography>
+                </Box>
+              </ListItemText>
             </ListItem>
           );
         })}
@@ -247,19 +268,55 @@ export default function Transfer() {
           </Select>
         </FormControl>
       </Box>
-      <Grid container spacing={2} justifyContent="center" alignItems="center">
+      <Grid container spacing={2} justifyContent="center">
         <Grid item>{customList(senderVariants)}</Grid>
         <Grid item>
           <Grid container direction="column" alignItems="center">
-            <TextField
-              margin="dense"
-              label="Amount"
-              type="number"
-              sx={{ width: 100 }}
-              variant="standard"
-              value={amount}
-              onChange={handleTrasferedamount}
-            />
+            {checkedVariant.length !== 0 ? (
+              checkedVariant.map((variant, index) => {
+                const amount = amounts[index] || "";
+                return (
+                  <Box
+                    className="focus:outline-none border-2 p-1 m-1 w-72 bg-white"
+                    key={variant._id}
+                  >
+                    <Box className="w-full flex justify-between">
+                      {variant.modelName}
+                      <Typography className=" text-green-500">{`${variant.price} ETB`}</Typography>
+
+                      <ClearIcon
+                        onClick={handleToggle(variant._id)}
+                        className=" bg-gray-300 flex rounded-full w-full h-full cursor-pointer hover:bg-gray-400"
+                      />
+                    </Box>
+                    <Box className="flex justify-between">
+                      <img
+                        src={variant.images[0].url}
+                        style={{
+                          objectFit: "cover",
+                          overflow: "hidden",
+                        }}
+                        className="w-1/5"
+                        alt="img"
+                      />
+                      <TextField
+                        margin="dense"
+                        label="Amount"
+                        type="number"
+                        sx={{ width: 100 }}
+                        variant="standard"
+                        value={amount}
+                        onChange={(event) =>
+                          handleTrasferedamount(event, index)
+                        }
+                      />
+                    </Box>
+                  </Box>
+                );
+              })
+            ) : (
+              <Box className="p-1 m-1 flex w-72 items-center"></Box>
+            )}
             <Button
               variant="contained"
               onClick={() => {

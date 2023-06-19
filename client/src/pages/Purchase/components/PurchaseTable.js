@@ -20,7 +20,6 @@ function PurchaseTable() {
     { field: "product", headerName: "Product", width: 130 },
     { field: "brand", headerName: "Brand", width: 70 },
     { field: "model", headerName: "Model", width: 190 },
-    { field: "variant", headerName: "Variant", width: 130 },
     { field: "amount", headerName: "Amount", width: 130 },
     { field: "price", headerName: "Unit Price", width: 130 },
     ...(user.role === "admin" || user.role === "super"

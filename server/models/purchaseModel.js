@@ -11,7 +11,7 @@ const PurchaseSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    variant: {
+    model: {
       type: String,
       required: true,
     },

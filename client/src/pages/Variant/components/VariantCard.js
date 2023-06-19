@@ -125,6 +125,7 @@ export default function VariantCard({ variant, setIsDetail, setSelectedId }) {
 
       <CardMedia
         component="img"
+        key={variant._id}
         image={variant.images[0].url}
         alt="Paella dish"
         className="h-64 w-64"

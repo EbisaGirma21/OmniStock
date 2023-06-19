@@ -16,11 +16,30 @@ const ProductCatagorySchema = mongoose.Schema(
         required: true,
       },
     },
+    productNames: [
+      {
+        name: {
+          type: String,
+        },
+        image: {
+          public_id: {
+            type: String,
+          },
+          url: {
+            type: String,
+          },
+        },
+      },
+      // String,
+    ],
   },
   { timestamps: true }
 );
 // Ensure academicYear is unique across documents
 // ProductCatagorySchema.index({ productCatagoryName: 1, store: 1 }, { unique: true });
 
-const ProductCatagory = mongoose.model("ProductCatagory", ProductCatagorySchema);
+const ProductCatagory = mongoose.model(
+  "ProductCatagory",
+  ProductCatagorySchema
+);
 module.exports = ProductCatagory;
