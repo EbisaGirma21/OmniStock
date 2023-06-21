@@ -1,16 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import Header from "../../components/UI/Header";
-import {
-  Box,
-  Button,
-  Card,
-  CardMedia,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import ProductCatagorysContext from "../../context/ProductCatagoryContext";
 import VariantsContext from "../../context/VariantContext";
+import Footer from "../../components/UI/Footer";
 
 const Home = () => {
   const [hoveredCatagory, setHoveredCatagory] = useState("");
@@ -55,7 +48,7 @@ const Home = () => {
     setHoveredCatagory("");
   };
   return (
-    <Box sx={{ backgroundColor: "#EDF0FE", height: "100vh" }}>
+    <Box sx={{ backgroundColor: "#EDF0FE", height: "100%" }}>
       <Header isLogin={true} />
       <Box
         className="flex w-full items-center justify-center gap-7 pt-4 mt-16"
@@ -81,7 +74,7 @@ const Home = () => {
         <Box
           position="relative"
           className="flex w-1/6"
-          sx={{ height: "600px" }}
+          sx={{ height: "800px" }}
           onMouseLeave={() => {
             handleMouseLeave();
           }}
@@ -121,7 +114,7 @@ const Home = () => {
             position="absolute"
             sx={{
               display: hoveredCatagory === "" ? "none" : "flex",
-              height: "600px",
+              height: "800px",
             }}
             className="flex flex-col  bg-white w-full shadow-md inset-x-full border-l-4 border-indigo-500"
           >
@@ -187,6 +180,7 @@ const Home = () => {
           </Box>
         </Box>
       </Box>
+      <Footer />
     </Box>
   );
 };

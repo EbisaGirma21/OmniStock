@@ -11,6 +11,7 @@ const variantRoutes = require("./routes/variantRoutes");
 const sellRoutes = require("./routes/sellRoutes");
 const transferRoutes = require("./routes/transferRoutes");
 const purchaseRoutes = require("./routes/purchaseRoutes");
+const requestRoutes = require("./routes/requestRoutes");
 
 // express app
 const app = express();
@@ -34,6 +35,7 @@ app.use("/api/variant", variantRoutes);
 app.use("/api/sell", sellRoutes);
 app.use("/api/purchase", purchaseRoutes);
 app.use("/api/transfer", transferRoutes);
+app.use("/api/request", requestRoutes);
 
 // MONGOOSE CONFIGURATION
 mongoose

@@ -23,6 +23,7 @@ import ProductCatagoryContext from "../../context/ProductCatagoryContext";
 import TransferContext from "../../context/TransferContext";
 import TransferDialog from "./components/Dialog";
 import ClearIcon from "@mui/icons-material/Clear";
+import { Cancel } from "@mui/icons-material";
 
 export default function Transfer() {
   const [checked, setChecked] = useState([]);
@@ -137,6 +138,8 @@ export default function Transfer() {
     transferByName(checkedVariant, amounts, receiverStore);
     fetchVariants();
     setAmounts([]);
+    setCheckedVariant([]);
+    setChecked([]);
   };
 
   const customList = (variants) => (
@@ -283,11 +286,12 @@ export default function Transfer() {
                     <Box className="w-full flex justify-between">
                       {variant.modelName}
                       <Typography className=" text-green-500">{`${variant.price} ETB`}</Typography>
-
-                      <ClearIcon
-                        onClick={handleToggle(variant._id)}
-                        className=" bg-gray-300 flex rounded-full w-full h-full cursor-pointer hover:bg-gray-400"
-                      />
+                      <IconButton className="w-6 h-6">
+                        <Cancel
+                          onClick={handleToggle(variant._id)}
+                         
+                        />
+                      </IconButton>
                     </Box>
                     <Box className="flex justify-between">
                       <img

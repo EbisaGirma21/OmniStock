@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Dashboard, Store } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import Divider from "@mui/material/Divider";
+import DynamicFormIcon from '@mui/icons-material/DynamicForm';
 import { useContext } from "react";
 import LocalGroceryStoreOutlinedIcon from "@mui/icons-material/LocalGroceryStoreOutlined";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
@@ -155,6 +155,11 @@ function SideBar() {
           icon: <ImportExportIcon />,
           path: "transfer",
         },
+        {
+          text: <Typography sx={itemTextStyle}>Request</Typography>,
+          icon: <DynamicFormIcon />,
+          path: "request",
+        },
       ];
     } else {
       return [
@@ -177,6 +182,11 @@ function SideBar() {
           text: <Typography sx={itemTextStyle}>Purchases</Typography>,
           icon: <MoveDownIcon />,
           path: "purchase",
+        },
+        {
+          text: <Typography sx={itemTextStyle}>Request</Typography>,
+          icon: <DynamicFormIcon />,
+          path: "request",
         },
       ];
     }
@@ -201,7 +211,7 @@ function SideBar() {
       }}
     >
       <Box
-        className="flex items-center justify-center"
+        className="flex items-center justify-start pl-6"
         style={{
           marginBottom: isSidebarOpen || isDrawerHover ? 5 : 19,
           height: "70px",
@@ -215,13 +225,11 @@ function SideBar() {
           sx={{
             display: isSidebarOpen || isDrawerHover ? "flex" : "none",
             cursor: "pointer",
-            justifyContent: "start",
           }}
         >
           <Link to="/dashboard">OmniStock</Link>
         </Typography>
       </Box>
-      <Divider />
 
       {/* list of admin page */}
       <List sx={styledList}>

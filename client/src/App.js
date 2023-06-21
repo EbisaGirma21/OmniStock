@@ -20,6 +20,8 @@ import Transfer from "./pages/Transfer/Transfer";
 import { TransferProvider } from "./context/TransferContext";
 import { PurchaseProvider } from "./context/PurchaseContext";
 import Purchase from "./pages/Purchase/Purchase";
+import { RequestProvider } from "./context/RequestContext";
+import Request from "./pages/Request/Request";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -91,6 +93,14 @@ function App() {
               }
             />
             <Route
+              path="request"
+              element={
+                <RequestProvider>
+                  <Request />
+                </RequestProvider>
+              }
+            />
+            <Route
               path="transfer"
               element={
                 <StorePageLayout>
@@ -118,9 +128,11 @@ function App() {
                 element={
                   <SellProvider>
                     <PurchaseProvider>
-                      <VariantProvider>
-                        <Variant />
-                      </VariantProvider>
+                      <ProductCatagoryProvider>
+                        <VariantProvider>
+                          <Variant />
+                        </VariantProvider>
+                      </ProductCatagoryProvider>
                     </PurchaseProvider>
                   </SellProvider>
                 }

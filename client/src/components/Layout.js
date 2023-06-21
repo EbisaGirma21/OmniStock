@@ -4,6 +4,8 @@ import { Outlet } from "react-router-dom";
 import NavBar from "./Navbar";
 import Box from "@mui/material/Box";
 import TogglePovider from "../context/SidebarContext";
+import { VariantProvider } from "../context/VariantContext";
+import { RequestProvider } from "../context/RequestContext";
 
 function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -35,7 +37,11 @@ function Layout() {
   return (
     <TogglePovider.Provider value={ValueToShare}>
       <Box ml={1}>
-        <NavBar />
+        <VariantProvider>
+          <RequestProvider>
+            <NavBar />
+          </RequestProvider>
+        </VariantProvider>
         <SideBar />
         <Box
           sx={{

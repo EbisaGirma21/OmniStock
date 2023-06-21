@@ -71,6 +71,12 @@ const createSell = async (req, res) => {
     return res.status(400).json({ error: "No such amount", emptyFields });
   }
 
+  if (selledVariant.amount < 10) {
+    return res
+      .status(400)
+      .json({ error: "Amount is less than threshold", emptyFields });
+  }
+
   //   deleting if  equal amount
   else if (+selledVariant.amount === +amount) {
     const deletedVariant = await Variant.findById(variant);

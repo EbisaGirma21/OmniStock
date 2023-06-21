@@ -2,11 +2,11 @@
 * {
   font-family: "Poppins";
   margin: 0;
-  padding: 0;
 }
 body {
   background-color: #edf0fe !important;
   font-family: "Poppins";
+  overflow: scroll !important;
 }
 
 @tailwind base;
@@ -14,24 +14,20 @@ body {
 @tailwind utilities;
 
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 4px;
   opacity: 0;
   transition: opacity 0.3s;
-  position: fixed;
 }
 
 ::-webkit-scrollbar-thumb-y {
   opacity: 0;
-  position: fixed;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   border-radius: 4px;
   background-color: #b6b6b6;
-  position: fixed;
 }
 
 :hover::-webkit-scrollbar {
   opacity: 0;
-  position: fixed;
 }

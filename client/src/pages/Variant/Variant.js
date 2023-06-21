@@ -11,7 +11,7 @@ import SellsContext from "../../context/SellContext";
 import PurchasesContext from "../../context/PurchaseContext";
 import SellDialog from "./components/SellDialog";
 import PurchaseDialog from "./components/PurchaseDialog";
-import ProductCatagorysContext from "../../context/ProductCatagoryContext";
+import ProductCatagoryContext from "../../context/ProductCatagoryContext";
 import VariantTable from "./components/VariantTable";
 
 const Variant = () => {
@@ -33,7 +33,7 @@ const Variant = () => {
   const { createSell } = useContext(SellsContext);
   const { createPurchase } = useContext(PurchasesContext);
   const { productCatagories, fetchProductCatagories } = useContext(
-    ProductCatagorysContext
+    ProductCatagoryContext
   );
 
   useEffect(() => {
@@ -225,7 +225,7 @@ const Variant = () => {
         <Box sx={{ m: 1, width: "100px", height: "150px" }}>
           {isDetail &&
             selectedVariant[0].images &&
-            selectedVariant[0].images.map((image, index) => (
+            selectedVariant[0].images.map((image, index) => {
               <img
                 key={`${selectedVariant}${index}`}
                 src={image.url}
@@ -233,8 +233,8 @@ const Variant = () => {
                 style={{ padding: 2, objectFit: "contain" }}
                 width="100%"
                 height="100%"
-              />
-            ))}
+              />;
+            })}
         </Box>
         <Box className="m-1 w-1/2 border-slate-500">
           {isDetail && (

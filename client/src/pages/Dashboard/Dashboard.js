@@ -147,10 +147,11 @@ const Dashboard = () => {
         {/* ROW 3 */}
 
         <Box
-          gridColumn="span 11"
+          gridColumn="span 12"
           gridRow="span 3"
           backgroundColor={colors.primary[400]}
           overflow="auto"
+          className="w-full"
         >
           <Box
             display="flex"

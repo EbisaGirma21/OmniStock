@@ -8,6 +8,7 @@ const getProductCatagorys = async (req, res) => {
     createdAt: -1,
   });
 
+
   res.status(200).json(productCatagorys);
 };
 

@@ -69,6 +69,14 @@ const VariantSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Virtual property to track time when amount is less than 10
+VariantSchema.virtual("lowStockTime").get(function () {
+  if (this.amount < 10) {
+    return this.updatedAt; // or use this.updatedAt if you prefer to track the time of the last update
+  }
+  return null; // Return null if amount is 10 or greater
+});
 // Ensure academicYear is unique across documents
 // VariantSchema.index({ modelName: 1, store: 1 }, { unique: true });
 

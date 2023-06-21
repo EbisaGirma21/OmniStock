@@ -107,7 +107,7 @@ function ProductCatagoryTable() {
       headerName: "Catagory",
       width: 150,
     },
-    { field: "productNames", headerName: "Product Names", width: 200 },
+    { field: "product", headerName: "Product Names", width: 200 },
     {
       field: "",
       headerName: "Actions",
