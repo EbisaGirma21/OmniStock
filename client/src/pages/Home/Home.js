@@ -122,7 +122,10 @@ const Home = () => {
               selectedCatagory[0].productNames.map((product) => {
                 return (
                   product.image && (
-                    <Box className="flex justify-between  items-center hover:bg-slate-300 cursor-pointer mr-2">
+                    <Box
+                      key={product._id}
+                      className="flex justify-between  items-center hover:bg-slate-300 cursor-pointer mr-2"
+                    >
                       <Box className="flex items-center">
                         <img
                           src={product.image.url}
@@ -130,9 +133,7 @@ const Home = () => {
                           className=" rounded-full w-9 h-9  object-contain m-1"
                         />
                         <Box className="flex-col">
-                          <Typography key={product._id} variant="p">
-                            {product.name}
-                          </Typography>
+                          <Typography variant="p">{product.name}</Typography>
                           <Box>14 items</Box>
                         </Box>
                       </Box>
@@ -164,7 +165,7 @@ const Home = () => {
             <Grid container spacing={1}>
               {uniqueVariants.map((variant) => {
                 return (
-                  <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <Grid key={variant._id} item xs={12} sm={6} md={4} lg={3}>
                     <Box className=" w-full h-full flex flex-col bg-white">
                       <img
                         src={variant.images[0].url}

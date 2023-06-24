@@ -7,10 +7,21 @@ import LineChart from "../../components/UI/LineChart";
 import BarChart from "../../components/UI/BarChart";
 import StatBox from "../../components/UI/StatBox";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+import { useContext, useEffect } from "react";
+import VariantsContext from "../../context/VariantContext";
+import formatDistanceToNow from "date-fns/formatDistanceToNow";
+
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const { variants, fetchVariants } = useContext(VariantsContext);
+
+  useEffect(() => {
+    fetchVariants();
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <Box m="40px">
@@ -43,7 +54,7 @@ const Dashboard = () => {
           border-radius=" 8px"
         >
           <StatBox
-            title="12,361"
+            title={variants.length}
             subtitle="All Products"
             progress="0.75"
             increase="+14%"
@@ -145,7 +156,6 @@ const Dashboard = () => {
         </Box>
 
         {/* ROW 3 */}
-
         <Box
           gridColumn="span 12"
           gridRow="span 3"
@@ -165,31 +175,40 @@ const Dashboard = () => {
               Recent Products
             </Typography>
           </Box>
-          {mockTransactions.map((transaction, i) => (
+          {variants.map((variant) => (
             <Box
-              key={`${transaction.txId}-${i}`}
+              key={variant._id}
               display="flex"
               justifyContent="space-between"
               alignItems="center"
               borderBottom={`1px solid ${colors.primary[500]}`}
               p="15px"
             >
-              <Box>
+              <Box className="w-1/3">
                 <Typography
                   color={colors.greenAccent[500]}
                   variant="h5"
                   fontWeight="600"
                 >
-                  {transaction.Product}
+                  {variant.modelName}
                 </Typography>
               </Box>
-              <Box color={colors.grey[100]}>{transaction.date}</Box>
-              <Box
-                backgroundColor={colors.greenAccent[500]}
-                p="5px 10px"
-                borderRadius="4px"
-              >
-                ${transaction.cost}
+              <Box className="w-1/4 flex justify-start">
+                <Box>
+                  {formatDistanceToNow(new Date(variant.createdAt), {
+                    addSuffiX: true,
+                  })}
+                </Box>
+              </Box>
+              <Box className="w-1/4 flex justify-end">
+                <Box
+                  backgroundColor={colors.greenAccent[500]}
+                  p="5px 10px"
+                  borderRadius="4px"
+                  className="w-32 flex justify-center"
+                >
+                  {variant.price}ETB
+                </Box>
               </Box>
             </Box>
           ))}

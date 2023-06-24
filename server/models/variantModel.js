@@ -28,7 +28,7 @@ const VariantSchema = mongoose.Schema(
     ],
     sizes: [
       {
-        type: Number,
+        type: String,
       },
     ],
     colors: [

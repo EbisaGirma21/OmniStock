@@ -23,7 +23,7 @@ const VariantCreate = ({ handleClose, open }) => {
   const [imageFiles, setImageFiles] = useState([]);
 
   // Context creation
-  const { createVariant } = useContext(VariantsContext);
+  const { createVariant, error, isLoading } = useContext(VariantsContext);
   const { productCatagories, fetchProductCatagories } = useContext(
     ProductCatagorysContext
   );
@@ -93,9 +93,9 @@ const VariantCreate = ({ handleClose, open }) => {
   };
 
   // Submit function
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    createVariant(
+    const success = await createVariant(
       productName,
       brandName,
       modelName,
@@ -110,7 +110,20 @@ const VariantCreate = ({ handleClose, open }) => {
       store,
       productCatagory
     );
-    setImageFiles([]);
+    if (success) {
+      setProductName("");
+      setBrandName("");
+      setModelName("");
+      setCondition("");
+      setGender("");
+      setPrice("");
+      setColors([]);
+      setSizes([]);
+      setAmount("");
+      setShortDescription("");
+      setImageFiles([]);
+      handleClose();
+    }
   };
 
   return (
@@ -120,6 +133,8 @@ const VariantCreate = ({ handleClose, open }) => {
       onSubmit={handleSubmit}
       open={open}
       handleClose={handleClose}
+      error={error}
+      isLoading={isLoading}
     >
       <form encType="multipart/form-data">
         <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -236,19 +251,6 @@ const VariantCreate = ({ handleClose, open }) => {
               onChange={handleImageChange}
             />
           </Box>
-
-          {/* <Box sx={{ display: "flex" }}>
-          {imageFiles.map((file, index) => (
-            <img
-              key={index}
-              src={file}
-              alt=""
-              width="150px"
-              height="120px"
-              style={{ display: "flex" }}
-            />
-          ))}
-        </Box> */}
         </Box>
       </form>
     </Modal>

@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Layout from "./components/Layout";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
@@ -22,6 +24,7 @@ import { PurchaseProvider } from "./context/PurchaseContext";
 import Purchase from "./pages/Purchase/Purchase";
 import { RequestProvider } from "./context/RequestContext";
 import Request from "./pages/Request/Request";
+import { Box } from "@mui/material";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -42,7 +45,7 @@ function App() {
     return children;
   };
   return (
-    <div className="App">
+    <Box>
       <BrowserRouter>
         <Routes>
           <Route
@@ -70,7 +73,9 @@ function App() {
               path="dashboard"
               element={
                 user && (user.role === "super" || user.role === "admin") ? (
-                  <Dashboard />
+                  <VariantProvider>
+                    <Dashboard />
+                  </VariantProvider>
                 ) : (
                   <Admin />
                 )
@@ -187,7 +192,12 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-    </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        toastStyle={{ width: "450px", right: "120px" }}
+      />
+    </Box>
   );
 }
 

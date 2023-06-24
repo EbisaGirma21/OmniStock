@@ -1,10 +1,14 @@
 import { createContext, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const VariantsContext = createContext();
 
 const VariantProvider = ({ children }) => {
   const [variants, setVariants] = useState([]);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(null);
 
   const fetchVariants = async () => {
     const response = await axios.get("http://localhost:4040/api/variant");
@@ -24,6 +28,9 @@ const VariantProvider = ({ children }) => {
     newGender,
     newShortDescription
   ) => {
+    setIsLoading(true);
+    setError(null);
+
     const response = await axios.patch(
       `http://localhost:4040/api/variant/${id}`,
       {
@@ -37,6 +44,12 @@ const VariantProvider = ({ children }) => {
         condition: newCondition,
         gender: newGender,
         shortDescription: newShortDescription,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
       }
     );
 
@@ -51,14 +64,26 @@ const VariantProvider = ({ children }) => {
   };
 
   const deleteVariantById = async (id) => {
-    await axios.delete(`http://localhost:4040/api/variant/${id}`);
-
-    const updatedVariants = variants.filter((variant) => {
-      return variant.id !== id;
-    });
-    fetchVariants();
-    setVariants(updatedVariants);
+    try {
+      const response = await axios.delete(
+        `http://localhost:4040/api/variant/${id}`
+      );
+      if (response.status !== 200) {
+        toast.error(response.data.error);
+      } else {
+        fetchVariants();
+        toast.warning("Product deleted successfully");
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Failed to delete product");
+      }
+    }
   };
+
+  // create variant
   const createVariant = async (
     productName,
     brandName,
@@ -74,25 +99,60 @@ const VariantProvider = ({ children }) => {
     store,
     productCatagory
   ) => {
-    const response = await axios.post("http://localhost:4040/api/variant", {
-      productName,
-      brandName,
-      modelName,
-      images,
-      sizes,
-      colors,
-      price,
-      amount,
-      condition,
-      gender,
-      shortDescription,
-      store,
-      productCatagory,
-    });
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post(
+        "http://localhost:4040/api/variant",
+        {
+          productName,
+          brandName,
+          modelName,
+          images,
+          sizes,
+          colors,
+          price,
+          amount,
+          condition,
+          gender,
+          shortDescription,
+          store,
+          productCatagory,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
 
-    fetchVariants();
+      if (response.status !== 200) {
+        setError(response.data.error);
+        setIsLoading(false);
+        return false;
+      } else {
+        setError(null);
+        setIsLoading(false);
+        fetchVariants();
+        toast.success("Product Catagory created successfully");
+        return true;
+      }
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.error);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        toast.error("Failed to create product catagory");
+        return false;
+      }
+    }
   };
+
   const valueToShare = {
+    error,
+    isLoading,
     variants,
     deleteVariantById,
     editVariantById,

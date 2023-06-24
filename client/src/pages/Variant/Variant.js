@@ -195,21 +195,19 @@ const Variant = () => {
         {filteredPCatagory[0] &&
           filteredPCatagory[0].productNames.map((productName) => {
             return (
-              <>
-                <Button
-                  variant="contained"
-                  key={productName._id}
-                  sx={{
-                    ml: 1,
-                    display: viewMode === "card" ? "block" : "none",
-                  }}
-                  onClick={() => {
-                    handleTypeClick(productName.name);
-                  }}
-                >
-                  {productName.name}
-                </Button>
-              </>
+              <Button
+                key={productName._id}
+                variant="contained"
+                sx={{
+                  ml: 1,
+                  display: viewMode === "card" ? "block" : "none",
+                }}
+                onClick={() => {
+                  handleTypeClick(productName.name);
+                }}
+              >
+                {productName.name}
+              </Button>
             );
           })}
       </Box>
@@ -218,14 +216,14 @@ const Variant = () => {
         position="fixed"
         sx={{
           display: isDetail ? "flex" : "none",
-          zIndex: "9999",
+          zIndex: "999",
         }}
         className="dialog-box bg-white shadow-xl  items-center  w-3/5 mx-56 mt-12 p-3"
       >
         <Box sx={{ m: 1, width: "100px", height: "150px" }}>
           {isDetail &&
             selectedVariant[0].images &&
-            selectedVariant[0].images.map((image, index) => {
+            selectedVariant[0].images.map((image, index) => (
               <img
                 key={`${selectedVariant}${index}`}
                 src={image.url}
@@ -233,8 +231,8 @@ const Variant = () => {
                 style={{ padding: 2, objectFit: "contain" }}
                 width="100%"
                 height="100%"
-              />;
-            })}
+              />
+            ))}
         </Box>
         <Box className="m-1 w-1/2 border-slate-500">
           {isDetail && (
@@ -252,7 +250,7 @@ const Variant = () => {
         {isDetail && (
           <Box sx={{ width: "100%" }}>
             <Box sx={{ m: 3, display: "flex" }}>
-              <Box>
+              <Box className="w-3/5">
                 <Typography sx={{ m: 2 }}>
                   Name: {selectedVariant[0].productName}
                 </Typography>
@@ -336,7 +334,6 @@ const Variant = () => {
         )}
       </Box>
 
-      <Grid sx={{ m: 1 }} container spacing={4}></Grid>
       {viewMode === "card" ? (
         <Grid container spacing={1}>
           {renderedVariants}

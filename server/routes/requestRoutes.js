@@ -4,13 +4,17 @@ const express = require("express");
 const {
   getRequests,
   createRequest,
+  updateRequest,
 } = require("../controllers/requestController");
 const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
 
-// signup route
+// create route
 router.post("/", createRequest);
+
+// update route
+router.patch("/:id", updateRequest);
 
 // GET all Requests (requires authentication)
 router.get("/", getRequests);

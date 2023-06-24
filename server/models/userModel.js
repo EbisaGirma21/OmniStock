@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const sendEmail = require("../controllers/mailController");
 
 const Schema = mongoose.Schema;
 
@@ -86,6 +87,7 @@ userSchema.statics.createUser = async function (
   }
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
+
   if (role === "admin") {
     const user = await this.create({
       firstName,
@@ -110,6 +112,7 @@ userSchema.statics.createUser = async function (
       store,
       password: hash,
     });
+    sendEmail(email, password);
     return user;
   }
 };

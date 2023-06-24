@@ -31,7 +31,6 @@ function NavBar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [isNotification, setIsNotification] = useState(false);
-  const [count, setCount] = useState(0);
 
   // from local Storage
   const user = JSON.parse(localStorage.getItem("user"));
@@ -41,7 +40,7 @@ function NavBar() {
   const { stores, setStores } = useContext(StorePageProvider);
   const { logout } = Logout();
   const { variants, fetchVariants } = useContext(VariantsContext);
-  const { requests, createRequest, fetchRequests } =
+  const { requests, createRequest, updateRequest, fetchRequests } =
     useContext(RequestsContext);
 
   const isIconRef = useRef(false);
@@ -72,14 +71,32 @@ function NavBar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // variant under threshold
+  // request under threshold and on progress
   const sentRequest = requests.filter((request) => {
+    return (
+      request.requestStatus === "Requested" ||
+      request.requestStatus === "Pending"
+    );
+  });
+
+  const requestAmount = requests.filter((request) => {
     return request.requestStatus === "Requested";
   });
 
   // variant under threshold
   const variantUnderThreshold = variants.filter((variant) => {
     return variant.amount < 10 && variant.store === user.store;
+  });
+
+  const badgeAmount = variantUnderThreshold.map((variant) => {
+    if (sentRequest.some((request) => request.variantId === variant._id)) {
+      return false;
+    }
+    return true;
+  });
+
+  var filteredBadgeAmount = badgeAmount.filter((amount) => {
+    return amount === true;
   });
 
   const Search = styled("div")(({ theme }) => ({
@@ -122,6 +139,21 @@ function NavBar() {
     },
   }));
 
+  const styledButton = {
+    color: "#22c55e",
+    background: "#bbf7d0",
+    textTransform: "lowercase",
+    borderRadius: "20px",
+    fontSize: "14px",
+    height: "28px",
+    marginTop: "5px",
+    boxShadow: "none",
+    padding: "10px",
+    "&:hover": {
+      background: "#bbf7d0",
+    },
+  };
+
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -141,6 +173,17 @@ function NavBar() {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
+
+  // setting request Is on view mode
+  function storeRequestIdForOneMinute(requestId) {
+    var key = "requestId";
+
+    localStorage.setItem(key, requestId);
+
+    setTimeout(function () {
+      localStorage.removeItem(key);
+    }, 30000); // 60000 milliseconds = 0.5 minute
+  }
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -225,7 +268,14 @@ function NavBar() {
 
   // send request handler
   const handleSendRequest = (variant) => {
-    createRequest(user._id, variant);
+    createRequest(user._id, variant, user.store);
+  };
+
+  const handleSeenRequest = (id, seen) => {
+    !seen && updateRequest(id);
+    setIsNotification(!isNotification);
+    storeRequestIdForOneMinute(id);
+    navigate("/request");
   };
 
   // notification panel handler
@@ -267,7 +317,7 @@ function NavBar() {
             ? `calc(100% - ${drawerWidth}px)`
             : `calc(100% - ${collapse}px)`,
           transition: "0.5s",
-          marginRight: 0,
+          paddingRight: "0px !important",
         }}
       >
         <Toolbar>
@@ -315,7 +365,7 @@ function NavBar() {
               aria-label="show 4 new mails"
               color="inherit"
             >
-              <Badge badgeContent={4} color="error">
+              <Badge badgeContent={0} color="error">
                 <MailIcon />
               </Badge>
             </IconButton>
@@ -326,7 +376,14 @@ function NavBar() {
               color="inherit"
               onClick={handleNotificationOpen}
             >
-              <Badge badgeContent={count} color="error">
+              <Badge
+                badgeContent={
+                  user.role === "sm"
+                    ? filteredBadgeAmount.length
+                    : requestAmount.length
+                }
+                color="error"
+              >
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -412,13 +469,13 @@ function NavBar() {
                           <button className="text-red-500 text-sm  bg-red-200 lowercase p-1 rounded-full px-2 !important m-1 ">
                             {isSent ? "seen" : "unread"}
                           </button>
-                          <button
+                          <Button
                             onClick={() => handleSendRequest(variant)}
-                            className="text-green-500 text-sm  bg-green-200 lowercase p-1 rounded-full px-2 !important m-1"
                             disabled={isSent ? true : false}
+                            sx={styledButton}
                           >
                             {isSent ? "Sent" : "Send Request"}
-                          </button>
+                          </Button>
                         </Box>
                       </Box>
                     </Box>
@@ -464,13 +521,26 @@ function NavBar() {
                             transfer.
                           </Typography>
                         </Box>
-                        <Box className="flex justify-center">
+                        <Box className="flex justify-start">
                           <button className="text-red-500 text-sm  bg-red-200 lowercase p-1 rounded-full px-2 !important m-1 ">
-                            unread
+                            {variant.requestStatus === "Pending"
+                              ? "seen"
+                              : "unread"}
                           </button>
-                          <button className="text-green-500 text-sm  bg-green-200 lowercase p-1 rounded-full px-2 !important m-1">
+                          <Button
+                            variant="contained"
+                            onClick={() =>
+                              handleSeenRequest(
+                                variant._id,
+                                variant.requestStatus === "Pending"
+                                  ? true
+                                  : false
+                              )
+                            }
+                            sx={styledButton}
+                          >
                             View Request
-                          </button>
+                          </Button>
                         </Box>
                       </Box>
                     </Box>

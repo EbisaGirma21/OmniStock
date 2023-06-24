@@ -1,18 +1,26 @@
 const mongoose = require("mongoose");
 
-const RequestSchema = mongoose.Schema(
+const TransferSchema = mongoose.Schema(
   {
-    store: {
+    senderStore: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
       required: true,
     },
-    requester: {
+    receiverStore: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Store",
       required: true,
     },
     productCatagory: {
+      type: String,
+      required: true,
+    },
+    productName: {
+      type: String,
+      required: true,
+    },
+    brandName: {
       type: String,
       required: true,
     },
@@ -20,23 +28,13 @@ const RequestSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    variantId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Variant",
+    amount: {
+      type: String,
       required: true,
-    },
-    requestType: {
-      type: String,
-    },
-    requestStatus: {
-      type: String,
-    },
-    readStatus: {
-      type: String,
     },
   },
   { timestamps: true }
 );
 
-const Request = mongoose.model("Request", RequestSchema);
-module.exports = Request;
+const Transfer = mongoose.model("Transfer", TransferSchema);
+module.exports = Transfer;

@@ -135,6 +135,8 @@ const deleteUser = async (req, res) => {
   res.status(200).json(user);
 };
 
+
+
 module.exports = {
   loginUser,
   getUser,

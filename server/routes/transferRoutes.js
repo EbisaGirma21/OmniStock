@@ -1,12 +1,18 @@
 const express = require("express");
 
 // controller functions
-const { transferVariant } = require("../controllers/transferController");
+const {
+  transferVariant,
+  getTransfers,
+} = require("../controllers/transferController");
 const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
 
-// signup route  (requires authorization)
+// transfer route  (requires authorization)
 router.patch("/", transferVariant);
+
+// get route  (requires authorization)
+router.get("/", getTransfers);
 
 module.exports = router;

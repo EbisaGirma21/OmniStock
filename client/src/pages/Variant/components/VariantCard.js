@@ -101,7 +101,6 @@ export default function VariantCard({ variant, setIsDetail, setSelectedId }) {
   return (
     <Card className="h-196 w-182">
       <CardHeader
-        key={variant._id}
         title={variant.variantName}
         action={
           <>
@@ -125,7 +124,6 @@ export default function VariantCard({ variant, setIsDetail, setSelectedId }) {
 
       <CardMedia
         component="img"
-        key={variant._id}
         image={variant.images[0].url}
         alt="Paella dish"
         className="h-64 w-64"
@@ -173,9 +171,6 @@ export default function VariantCard({ variant, setIsDetail, setSelectedId }) {
           </Box>
           <Box sx={{ marginLeft: 5 }}>
             <Typography paragraph>Condition: {variant.condition}</Typography>
-            {/* <Typography paragraph>
-              Description: {variant.shortDescription}
-            </Typography> */}
             <Typography paragraph>Price: {variant.price}</Typography>
             <Typography paragraph>Amount: {variant.amount}</Typography>
           </Box>

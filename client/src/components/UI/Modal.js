@@ -30,8 +30,6 @@ const Modal = (props) => {
   } = props;
   const handleSave = (e) => {
     onSubmit(e);
-    error && handleClose();
-    !error & !isLoading && handleClose();
   };
   return (
     <Box>

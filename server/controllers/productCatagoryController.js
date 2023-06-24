@@ -4,12 +4,16 @@ const cloudinary = require("../utils/cloudinary");
 
 // get catagories
 const getProductCatagorys = async (req, res) => {
-  const productCatagorys = await ProductCatagory.find({}).sort({
-    createdAt: -1,
-  });
-
-
-  res.status(200).json(productCatagorys);
+  try {
+    const productCategories = await ProductCatagory.find();
+    const modifiedCategories = productCategories.map((category) => {
+      const product = category.productNames.map((product) => product.name);
+      return { ...category.toObject(), product };
+    });
+    res.json(modifiedCategories);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch product categories" });
+  }
 };
 
 // get a single ProductCatagory
@@ -30,7 +34,7 @@ const getProductCatagory = async (req, res) => {
 
 // create a new ProductCatagory
 const createProductCatagory = async (req, res) => {
-  const { productCatagoryName, image, store, productNames } = req.body;
+  const { productCatagoryName, image, productNames } = req.body;
   let emptyFields = [];
   if (!productCatagoryName) {
     emptyFields.push("productCatagoryName");
@@ -38,10 +42,10 @@ const createProductCatagory = async (req, res) => {
   if (!productNames) {
     emptyFields.push("productNames");
   }
-  if (image.length === 0) {
+  if (!image) {
     emptyFields.push("image");
   }
-
+  console.log(emptyFields);
   if (emptyFields.length > 0) {
     return res
       .status(400)
@@ -66,7 +70,6 @@ const createProductCatagory = async (req, res) => {
         public_id: result.public_id,
         url: result.secure_url,
       },
-      store,
       productNames: product,
     });
     // Push each name from the request body to the productNames array

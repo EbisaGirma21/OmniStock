@@ -1,6 +1,14 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { useContext, useEffect } from "react";
 import RequestsContext from "../../../context/RequestContext";
+import styled from "@emotion/styled";
+
+// style for selected row
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  "& .stored-request-row": {
+    backgroundColor: "#EDE7F6",
+  },
+}));
 
 function RequestTable() {
   const { requests, fetchRequests } = useContext(RequestsContext);
@@ -16,7 +24,7 @@ function RequestTable() {
           },
         ]
       : []),
-    { field: "productCatagory", headerName: "Product catagory", width: 150 },
+    { field: "productCatagory", headerName: "Product category", width: 150 },
     { field: "product", headerName: "Product", width: 130 },
     { field: "brand", headerName: "Brand", width: 70 },
     { field: "modelName", headerName: "Model", width: 190 },
@@ -28,7 +36,7 @@ function RequestTable() {
             field: "requesterName",
             headerName: "Requester",
             width: 250,
-            key: "RequestrColumn",
+            key: "RequesterColumn",
           },
         ]
       : []),
@@ -38,6 +46,7 @@ function RequestTable() {
     fetchRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   let requestByStore = [];
   if (user.role === "sm") {
     requestByStore = requests.filter((request) => {
@@ -50,8 +59,16 @@ function RequestTable() {
   const tableRows = Array.isArray(requestByStore)
     ? requestByStore
     : [requestByStore];
+
+  const getRowClassName = (params) => {
+    const rowId = params.row._id;
+    const requestId = localStorage.getItem("requestId");
+    const isStoredRequest = requestId && requestId === rowId;
+    return isStoredRequest ? "stored-request-row" : "";
+  };
+
   return (
-    <DataGrid
+    <StyledDataGrid
       sx={{ width: "fit-content" }}
       rows={tableRows}
       columns={columns}
@@ -63,6 +80,8 @@ function RequestTable() {
       }}
       getRowId={(row) => row._id || requestByStore.indexOf(row)}
       pageSizeOptions={[5, 10]}
+      getRowClassName={getRowClassName}
+      onRowClick={() => localStorage.removeItem("requestId")}
     />
   );
 }

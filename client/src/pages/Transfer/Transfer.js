@@ -24,6 +24,7 @@ import TransferContext from "../../context/TransferContext";
 import TransferDialog from "./components/Dialog";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Cancel } from "@mui/icons-material";
+import TransferTable from "./components/TransferTable";
 
 export default function Transfer() {
   const [checked, setChecked] = useState([]);
@@ -135,7 +136,7 @@ export default function Transfer() {
     setdDialogOpen(false);
   };
   const handleSubmit = () => {
-    transferByName(checkedVariant, amounts, receiverStore);
+    transferByName(checkedVariant, amounts, receiverStore, senderStore);
     fetchVariants();
     setAmounts([]);
     setCheckedVariant([]);
@@ -287,10 +288,7 @@ export default function Transfer() {
                       {variant.modelName}
                       <Typography className=" text-green-500">{`${variant.price} ETB`}</Typography>
                       <IconButton className="w-6 h-6">
-                        <Cancel
-                          onClick={handleToggle(variant._id)}
-                         
-                        />
+                        <Cancel onClick={handleToggle(variant._id)} />
                       </IconButton>
                     </Box>
                     <Box className="flex justify-between">
@@ -335,6 +333,9 @@ export default function Transfer() {
         </Grid>
         <Grid item>{customList(receiverVariants)}</Grid>
       </Grid>
+      <Box className="m-4">
+        <TransferTable />
+      </Box>
     </>
   );
 }

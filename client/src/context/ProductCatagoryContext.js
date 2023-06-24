@@ -1,5 +1,6 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ProductCatagorysContext = createContext();
 
@@ -41,59 +42,81 @@ const ProductCatagoryProvider = ({ children }) => {
   };
 
   const deleteProductCatagoryById = async (id) => {
-    await axios.delete(`http://localhost:4040/api/productCatagory/${id}`);
+    try {
+      const response = await axios.delete(
+        `http://localhost:4040/api/productCatagory/${id}`
+      );
 
-    const updatedProductCatagorys = productCatagories.filter(
-      (productCatagory) => {
-        return productCatagory.id !== id;
+      if (response.status !== 200) {
+        toast.error(response.data.error);
+      } else {
+        const updateProductCatagories = productCatagories.filter(
+          (productCatagory) => productCatagory._id !== id
+        );
+        setProductCatagories(updateProductCatagories);
+        toast.warning("Product Catagory deleted successfully");
       }
-    );
-    fetchProductCatagories();
-    setProductCatagories(updatedProductCatagorys);
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Failed to delete product catagory");
+      }
+    }
   };
 
   const createProductCatagory = async (
     productCatagoryName,
     image,
-    store,
     productNames
   ) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(
+      const response = await axios.post(
         "http://localhost:4040/api/productCatagory",
         {
-          method: "POST",
-          body: JSON.stringify({
-            productCatagoryName,
-            image,
-            store,
-            productNames,
-          }),
+          productCatagoryName,
+          image,
+          productNames,
+        },
+        {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
           },
         }
       );
-      const json = await response.json();
-      if (!response.ok) {
+
+      if (response.status !== 200) {
+        setError(response.data.error);
         setIsLoading(false);
-        setError(json.error);
         return false;
       } else {
-        fetchProductCatagories();
+        setError(null);
         setIsLoading(false);
+        fetchProductCatagories();
+        toast.success("Product Catagory created successfully");
         return true;
       }
     } catch (error) {
-      setIsLoading(false);
-      setError(error.message);
-      return false;
+      if (error.response) {
+        setError(error.response.data.error);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        toast.error("Failed to create product catagory");
+        return false;
+      }
     }
   };
+
+  useEffect(() => {
+    const pollingInterval = 500; // Polling interval in milliseconds (e.g., every 5 seconds)
+    const intervalId = setInterval(fetchProductCatagories, pollingInterval);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const valueToShare = {
     error,

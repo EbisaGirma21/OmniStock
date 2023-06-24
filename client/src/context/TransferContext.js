@@ -1,18 +1,35 @@
-import { createContext } from "react";
+import { createContext, useState } from "react";
 import axios from "axios";
 
 const TransferContext = createContext();
 
 const TransferProvider = ({ children }) => {
-  const transferByName = async (variant, amounts, store) => {
+  const [transfers, setTransfers] = useState([]);
+
+  const fetchTransfers = async () => {
+    const response = await axios.get("http://localhost:4040/api/transfer");
+    setTransfers(response.data);
+  };
+
+  const transferByName = async (
+    variant,
+    amounts,
+    receiverStore,
+    senderStore
+  ) => {
     const response = await axios.patch(`http://localhost:4040/api/transfer/`, {
       variant,
       amounts,
-      store,
+      store: receiverStore,
+      senderStore,
     });
+
+    fetchTransfers();
   };
 
   const valueToShare = {
+    transfers,
+    fetchTransfers,
     transferByName,
   };
 

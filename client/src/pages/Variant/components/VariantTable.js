@@ -113,7 +113,11 @@ function VariantTable({ variants, setIsDetail, setSelectedId }) {
     { field: "colors", headerName: "Color", width: 150 },
     { field: "price", headerName: "Unit Price", width: 150 },
     { field: "amount", headerName: "Amount", width: 150 },
-    { field: "gender", headerName: "Gender", width: 150 },
+    {
+      field: "gender",
+      headerName: "Gender",
+      width: 150,
+    },
     {
       field: "",
       headerName: "Actions",

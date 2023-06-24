@@ -243,18 +243,7 @@ const VariantUpdate = (props) => {
             />
           </Box>
 
-          {/* <Box sx={{ display: "flex" }}>
-          {imageFiles.map((file, index) => (
-            <img
-              key={index}
-              src={file}
-              alt=""
-              width="150px"
-              height="120px"
-              style={{ display: "flex" }}
-            />
-          ))}
-        </Box> */}
+         
         </Box>
       </form>
     </Modal>

@@ -4,9 +4,6 @@ import { Box, TextField } from "@mui/material";
 import ProductCatagorysContext from "../../../context/ProductCatagoryContext";
 
 const ProductCatagoryCreate = ({ handleClose, open }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const [success, setSuccess] = useState(false);
-
   // useSate for hte for input
   const [productCatagoryName, setProductCatagoryName] = useState("");
   const [imageFile, setImageFile] = useState([]);
@@ -41,19 +38,19 @@ const ProductCatagoryCreate = ({ handleClose, open }) => {
   };
 
   // submit functions
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = createProductCatagory(
+    console.log(productCatagoryName, productNames);
+    const success = await createProductCatagory(
       productCatagoryName,
       imageFile,
-      user.store,
       productNames
     );
-    setSuccess(success);
     if (success) {
       setProductCatagoryName("");
+      setProductNames([]);
       setImageFile([]);
-      // handleClose();
+      handleClose();
     }
   };
 
