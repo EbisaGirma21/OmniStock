@@ -4,6 +4,7 @@ import { Box, Button, Grid, Typography } from "@mui/material";
 import ProductCatagorysContext from "../../context/ProductCatagoryContext";
 import VariantsContext from "../../context/VariantContext";
 import Footer from "../../components/UI/Footer";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [hoveredCatagory, setHoveredCatagory] = useState("");
@@ -12,6 +13,8 @@ const Home = () => {
     ProductCatagorysContext
   );
   const { variants, fetchVariants } = useContext(VariantsContext);
+
+  const navigate = useNavigate();
 
   // making varinat unique
   const uniqueVariants = Object.values(
@@ -47,6 +50,15 @@ const Home = () => {
   const handleMouseLeave = () => {
     setHoveredCatagory("");
   };
+  const handleProductClick = (name) => {
+    navigate("/:product/:detail");
+    localStorage.setItem("selectedName", name);
+  };
+
+  const handleCatagoryClick = () => {
+    navigate("/:product");
+  };
+
   return (
     <Box sx={{ backgroundColor: "#EDF0FE", height: "100%" }}>
       <Header isLogin={true} />
@@ -126,7 +138,10 @@ const Home = () => {
                       key={product._id}
                       className="flex justify-between  items-center hover:bg-slate-300 cursor-pointer mr-2"
                     >
-                      <Box className="flex items-center">
+                      <Box
+                        className="flex items-center"
+                        onClick={handleCatagoryClick}
+                      >
                         <img
                           src={product.image.url}
                           alt=""
@@ -166,7 +181,10 @@ const Home = () => {
               {uniqueVariants.map((variant) => {
                 return (
                   <Grid key={variant._id} item xs={12} sm={6} md={4} lg={3}>
-                    <Box className=" w-full h-full flex flex-col bg-white">
+                    <Box
+                      className=" w-full h-full flex flex-col bg-white"
+                      onClick={() => handleProductClick(variant.modelName)}
+                    >
                       <img
                         src={variant.images[0].url}
                         alt=""

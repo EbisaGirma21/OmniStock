@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { StoreManagerPageProvider } from "../../../context/CreateContext";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 function StoreManagerPageLayout({ children }) {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -76,21 +77,26 @@ function StoreManagerPageLayout({ children }) {
           },
         }
       );
-      clearForm();
-      fetch("http://localhost:4040/api/user", {
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => setStoreManagers(data));
-      const updateStoreManager = [...storeManagers, response.data];
-      setStoreManagers(updateStoreManager);
+      if (response.status !== 200) {
+      } else {
+        clearForm();
+        fetch("http://localhost:4040/api/user", {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => setStoreManagers(data));
+        const updateStoreManager = [...storeManagers, response.data];
+        setStoreManagers(updateStoreManager);
+        setOpenModal(false);
+        toast.success("User succuessfully created.");
+      }
     } catch (error) {
       console.log(error);
+      toast.error("Failed to create store");
     }
-    setOpenModal(false);
   };
 
   const handleUpdateModalOpen = (id) => {
@@ -108,7 +114,7 @@ function StoreManagerPageLayout({ children }) {
   };
 
   const updateStoreManager = async (editedRow) => {
-    await axios.patch(
+    const response = await axios.patch(
       `http://localhost:4040/api/user/${rowToEdit}`,
       {
         editedRow,
@@ -120,15 +126,19 @@ function StoreManagerPageLayout({ children }) {
         },
       }
     );
-    fetch("http://localhost:4040/api/user", {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => setStoreManagers(data));
 
-    handleModalClose();
+    if (response.status !== 200) {
+    } else {
+      fetch("http://localhost:4040/api/user", {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => setStoreManagers(data));
+      handleModalClose();
+      toast.info("User updated Successfully");
+    }
   };
 
   const handleDeleteDialogOpen = (id) => {
@@ -137,18 +147,24 @@ function StoreManagerPageLayout({ children }) {
   };
 
   const deleteStoreManager = async () => {
-    await axios.delete(`http://localhost:4040/api/user/${rowToDelete}`, {
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${user.token}`,
-      },
-    });
-
-    const updatedStoreManagers = storeManagers.filter((storeManager) => {
-      return storeManager._id !== rowToDelete;
-    });
-    setStoreManagers(updatedStoreManagers);
-    handleDialogClose();
+    const response = await axios.delete(
+      `http://localhost:4040/api/user/${rowToDelete}`,
+      {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+    );
+    if (response.status !== 200) {
+    } else {
+      const updatedStoreManagers = storeManagers.filter((storeManager) => {
+        return storeManager._id !== rowToDelete;
+      });
+      setStoreManagers(updatedStoreManagers);
+      handleDialogClose();
+      toast.warning("User Deleted Successfully");
+    }
   };
 
   const valueToshare = {

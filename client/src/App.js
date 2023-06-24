@@ -25,6 +25,8 @@ import Purchase from "./pages/Purchase/Purchase";
 import { RequestProvider } from "./context/RequestContext";
 import Request from "./pages/Request/Request";
 import { Box } from "@mui/material";
+import Product from "./pages/Home/components/Product";
+import ProductDetail from "./pages/Home/components/ProductDetail";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -48,16 +50,36 @@ function App() {
     <Box>
       <BrowserRouter>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <ProductCatagoryProvider>
-                <VariantProvider>
-                  <Home />
-                </VariantProvider>
-              </ProductCatagoryProvider>
-            }
-          />
+          <Route path="/">
+            <Route
+              index
+              element={
+                <ProductCatagoryProvider>
+                  <VariantProvider>
+                    <Home />
+                  </VariantProvider>
+                </ProductCatagoryProvider>
+              }
+            />
+            <Route path=":product">
+              <Route
+                index
+                element={
+                  <VariantProvider>
+                    <Product />
+                  </VariantProvider>
+                }
+              />
+              <Route
+                path=":detail"
+                element={
+                  <VariantProvider>
+                    <ProductDetail />
+                  </VariantProvider>
+                }
+              />
+            </Route>
+          </Route>
           <Route path="login" element={<Login />} />
           <Route
             path="/"

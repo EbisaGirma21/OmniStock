@@ -112,21 +112,35 @@ const deleteProductCatagory = async (req, res) => {
 // update a ProductCatagory
 const updateProductCatagory = async (req, res) => {
   const { id } = req.params;
+  const { productCatagoryName, productNames } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ error: "No such productCatagory" });
   }
-
-  const productCatagory = await ProductCatagory.findOneAndUpdate(
-    { _id: id },
-    {
-      ...req.body,
-    }
-  );
-
+  // checking existance
+  const productCatagory = await ProductCatagory.findById(id);
   if (!productCatagory) {
     return res.status(400).json({ error: "No such ProductCatagory" });
   }
+
+  // updating names
+  productCatagory.productCatagoryName = productCatagoryName;
+
+  // update exist product
+  productCatagory.productNames.forEach((productName, index) => {
+    productName.name = productNames[index];
+  });
+
+  // adding if not exist
+  productNames
+    .slice(productCatagory.productNames.length)
+    .forEach((newProductName) => {
+      if (newProductName) {
+        productCatagory.productNames.push({ name: newProductName });
+      }
+    });
+
+  await productCatagory.save();
 
   res.status(200).json(productCatagory);
 };

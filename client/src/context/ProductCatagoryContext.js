@@ -23,22 +23,37 @@ const ProductCatagoryProvider = ({ children }) => {
     newproductCatagoryName,
     newProductNames
   ) => {
-    const response = await axios.patch(
-      `http://localhost:4040/api/productCatagory/${id}`,
-      {
-        productCatagoryName: newproductCatagoryName,
-        productNames: newProductNames,
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.patch(
+        `http://localhost:4040/api/productCatagory/${id}`,
+        {
+          productCatagoryName: newproductCatagoryName,
+          productNames: newProductNames,
+        }
+      );
+      if (response.status !== 200) {
+        setError(response.data.error);
+        setIsLoading(false);
+        return false;
+      } else {
+        setError(null);
+        setIsLoading(false);
+        fetchProductCatagories();
+        toast.info("Product Catagory updated successfully");
+        return true;
       }
-    );
-
-    const updatedProductCatagorys = productCatagories.map((productCatagory) => {
-      if (productCatagory.id === id) {
-        return { ...productCatagory, ...response.data };
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.error);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        toast.error("Failed to update product catagory");
+        return false;
       }
-      return productCatagory;
-    });
-    fetchProductCatagories();
-    setProductCatagories(updatedProductCatagorys);
+    }
   };
 
   const deleteProductCatagoryById = async (id) => {
@@ -112,11 +127,11 @@ const ProductCatagoryProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const pollingInterval = 500; // Polling interval in milliseconds (e.g., every 5 seconds)
-    const intervalId = setInterval(fetchProductCatagories, pollingInterval);
-    return () => clearInterval(intervalId);
-  }, []);
+  // useEffect(() => {
+  //   const pollingInterval = 500; // Polling interval in milliseconds (e.g., every 5 seconds)
+  //   const intervalId = setInterval(fetchProductCatagories, pollingInterval);
+  //   return () => clearInterval(intervalId);
+  // }, []);
 
   const valueToShare = {
     error,

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { StorePageProvider } from "../../../context/CreateContext";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 function StorePageLayout({ children }) {
   const [stores, setStores] = useState([]);
@@ -11,20 +12,22 @@ function StorePageLayout({ children }) {
     storeLocation: "",
     productAmount: "",
   });
-
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const handleModalOpen = () => {
     setOpenModal(true);
   };
 
-  
   const handleModalClose = () => {
     setOpenModal(!openModal);
     setRowToEdit(null);
     clearForm();
   };
-  
+
   const [openDialog, setOpenDialog] = useState(false);
 
   const handleDialogClose = () => {
@@ -39,21 +42,39 @@ function StorePageLayout({ children }) {
   };
 
   const AddNewStore = async (storeName, storeLocation) => {
+    setIsLoading(true);
+    setError(null);
     try {
       const response = await axios.post("http://localhost:4040/api/store", {
         storeName,
         storeLocation,
       });
-      clearForm();
-      fetch("http://localhost:4040/api/store")
-        .then((response) => response.json())
-        .then((data) => setStores(data));
-      const updatedStores = [...stores, response.data];
-      setStores(updatedStores);
+
+      if (response.status !== 200) {
+        setError(response.data.error);
+        setIsLoading(false);
+        return false;
+      } else {
+        clearForm();
+        setOpenModal(false);
+        fetch("http://localhost:4040/api/store")
+          .then((response) => response.json())
+          .then((data) => setStores(data));
+        const updatedStores = [...stores, response.data];
+        setStores(updatedStores);
+        toast.success("Store created successfully");
+        return true;
+      }
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        setError(error.response.data.error);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        toast.error("Failed to create store");
+        return false;
+      }
     }
-    setOpenModal(false);
   };
 
   const handleUpdateModalOpen = (id) => {
@@ -66,20 +87,29 @@ function StorePageLayout({ children }) {
   };
 
   const updateStore = async (editedRow) => {
-    await axios.patch(
+    const response = await axios.patch(
       `http://localhost:4040/api/store/${rowToEdit}`,
       {
         method: "PATCH",
         body: editedRow,
         headers: {
-          "Content-type": "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
         },
       }
     );
-    fetch("http://localhost:4040/api/store")
-      .then((response) => response.json())
-      .then((data) => setStores(data));
-    handleModalClose();
+    if (response.status !== 200) {
+      setError(response.data.error);
+      setIsLoading(false);
+      return false;
+    } else {
+      fetch("http://localhost:4040/api/store")
+        .then((response) => response.json())
+        .then((data) => setStores(data));
+      handleModalClose();
+      toast.info("Store updated successfully");
+      return true
+    }
   };
 
   const handleDeleteDialogOpen = (id) => {
@@ -87,17 +117,34 @@ function StorePageLayout({ children }) {
     setOpenDialog(true);
   };
 
-  const deleteStore = async() => {
-    await axios.delete(`http://localhost:4040/api/store/${rowToDelete}`);
+  const deleteStore = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:4040/api/store/${rowToDelete}`
+      );
 
-    const updatedStores = stores.filter((store) => {
-      return store._id !== rowToDelete;
-    });
-    setStores(updatedStores);
-    handleDialogClose();
+      if (response.status !== 200) {
+        toast.error(response.data.error);
+      } else {
+        const updatedStores = stores.filter((store) => {
+          return store._id !== rowToDelete;
+        });
+        setStores(updatedStores);
+        handleDialogClose();
+        toast.warning("Product Catagory deleted successfully");
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Failed to delete product catagory");
+      }
+    }
   };
 
   const valueToshare = {
+    error,
+    isLoading,
     openModal,
     handleModalClose,
     handleModalOpen,
@@ -115,7 +162,6 @@ function StorePageLayout({ children }) {
     setRowToEdit,
     rowToEdit,
     rowToDelete,
-
   };
 
   return (

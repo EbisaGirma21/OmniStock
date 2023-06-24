@@ -79,14 +79,7 @@ const ProductCatagoryCreate = ({ handleClose, open }) => {
             value={productCatagoryName}
             onChange={handleproductCatagoryNameChange}
           />
-          <TextField
-            margin="dense"
-            label="Image"
-            type="file"
-            sx={{ minWidth: 300 }}
-            variant="standard"
-            onChange={handleImageChange}
-          />
+
           <TextField
             margin="dense"
             label="Product Names"
@@ -96,6 +89,14 @@ const ProductCatagoryCreate = ({ handleClose, open }) => {
             variant="standard"
             value={productNames}
             onChange={handleProductNamesChange}
+          />
+          <TextField
+            margin="dense"
+            label="Image"
+            type="file"
+            sx={{ minWidth: 300 }}
+            variant="standard"
+            onChange={handleImageChange}
           />
         </Box>
         {/* <img src={imageFile} alt="" width="100px" height="150px" /> */}

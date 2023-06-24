@@ -19,9 +19,7 @@ const ProductCatagoryUpdate = (props) => {
   const [productCatagoryName, setProductCatagoryName] = useState(
     productCatagory[0].productCatagoryName
   );
-  const [productNames, setProductNames] = useState(
-    productCatagory[0].productNames
-  );
+  const [productNames, setProductNames] = useState(productCatagory[0].product);
 
   const [imageFile, setImageFile] = useState(productCatagory[0].image.url);
 
@@ -48,13 +46,17 @@ const ProductCatagoryUpdate = (props) => {
 
   // submit functions
   const handleSubmit = () => {
-    editProductCatagoryById(
+    const success = editProductCatagoryById(
       productCatagoryId,
       productCatagoryName,
       productNames
     );
-    setProductCatagoryName("");
-    setImageFile([]);
+    if (success) {
+      setProductCatagoryName("");
+      setProductNames([]);
+      setImageFile([]);
+      handleClose();
+    }
   };
 
   return (
@@ -79,14 +81,6 @@ const ProductCatagoryUpdate = (props) => {
           />
           <TextField
             margin="dense"
-            label="Image"
-            type="file"
-            sx={{ minWidth: 300 }}
-            variant="standard"
-            onChange={handleImageChange}
-          />
-          <TextField
-            margin="dense"
             label="Product Names"
             type="text"
             placeholder="split the names by comma"
@@ -94,6 +88,14 @@ const ProductCatagoryUpdate = (props) => {
             variant="standard"
             value={productNames}
             onChange={handleProductNamesChange}
+          />
+          <TextField
+            margin="dense"
+            label="Image"
+            type="file"
+            sx={{ minWidth: 300 }}
+            variant="standard"
+            onChange={handleImageChange}
           />
         </Box>
       </form>

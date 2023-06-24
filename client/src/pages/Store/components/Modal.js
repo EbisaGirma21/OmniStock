@@ -3,10 +3,11 @@ import {
   StyledBox,
   StyledBoxFlex,
   StyledButton,
+  ErrorLabel,
 } from "../../../components/StyledComponents";
 import { useContext } from "react";
 import { StorePageProvider } from "../../../context/CreateContext";
-import {  Divider,  Stack, TextField, Typography } from "@mui/material";
+import { Divider, Stack, TextField, Typography } from "@mui/material";
 function Modal() {
   const {
     openModal,
@@ -17,6 +18,8 @@ function Modal() {
     updateStore,
     rowToEdit,
     setRowToEdit,
+    error,
+    isLoading,
   } = useContext(StorePageProvider);
 
   const handleInputChange = (event) => {
@@ -24,29 +27,28 @@ function Modal() {
     setFormValues({ ...formValues, [name]: value });
   };
 
+  const validateForm = () => {
+    if (formValues.storeName && formValues.storeLocation) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
-   const validateForm = () => {
-     if (formValues.storeName && formValues.storeLocation) {
-       return true;
-     } else {
-       return false;
-     }
-   };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!validateForm()) return;
+    if (rowToEdit !== null) {
+      setRowToEdit(null);
+      updateStore(formValues);
+    } else {
+       AddNewStore(formValues);
+    }
+  };
 
-   const handleSubmit = (event) => {
-       event.preventDefault();
-       if (!validateForm()) return;
-       if (rowToEdit !== null) {
-         setRowToEdit(null);
-         updateStore(formValues);
-       } else {
-         AddNewStore(formValues);
-       }
-   };
-
-   const handleCancel = () => {
-     handleModalClose();
-   };
+  const handleCancel = () => {
+    handleModalClose();
+  };
   return (
     <StyledModal
       aria-labelledby="transition-modal-title"
@@ -97,12 +99,13 @@ function Modal() {
             <StyledButton
               onClick={handleCancel}
               variant="contained"
-              color="error"
+              disabled={isLoading}
             >
               Cancel
             </StyledButton>
           </StyledBoxFlex>
         </form>
+        {error && <ErrorLabel>{error}</ErrorLabel>}
       </StyledBox>
     </StyledModal>
   );

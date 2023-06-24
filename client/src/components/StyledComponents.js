@@ -57,3 +57,12 @@ export const SearchInput = styled(InputBase)({
   width: "100%",
   height: "32px",
 });
+
+export const ErrorLabel = styled(Box)(() => ({
+  backgroundColor: "#FFF0F1",
+  border: "1px solid #e5a9ac",
+  padding: "5px",
+  borderRadius: "10px",
+  color: "#864348",
+  marginTop: "10px",
+}));
