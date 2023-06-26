@@ -1,5 +1,5 @@
 import VariantCard from "./components/VariantCard";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import VariantsContext from "../../context/VariantContext";
 import { useEffect } from "react";
 import Grid from "@mui/material/Grid";
@@ -36,6 +36,8 @@ const Variant = () => {
   const { productCatagories, fetchProductCatagories } = useContext(
     ProductCatagoryContext
   );
+
+  const isIconRef = useRef(false);
 
   useEffect(() => {
     fetchProductCatagories();
@@ -109,25 +111,45 @@ const Variant = () => {
       ? variants.filter((variant) => {
           return (
             (variant.store === user.store) &
-            (variant._id !== selectedId) &
             (variant.productCatagoryId === productCatagory)
           );
         })
       : variants.filter((variant) => {
           return (
             (variant.store === user.store) &
-            (variant._id !== selectedId) &
             (variant.productName === params) &
             (variant.productCatagoryId === productCatagory)
           );
         });
+
+  const detailRef = useRef(null);
+
+  useEffect(() => {
+    const handleDocumentClick = (event) => {
+      if (detailRef.current && !detailRef.current.contains(event.target)) {
+        if (!isIconRef.current) {
+          setIsDetail(false);
+        }
+        isIconRef.current = false;
+      }
+    };
+    document.addEventListener("click", handleDocumentClick);
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick);
+    };
+  }, []);
 
   const renderedVariants = variantByStores.map((variantByStore) => {
     return (
       <Grid key={variantByStore._id} item xs={12} sm={6} md={4} lg={3}>
         <VariantCard
           variant={variantByStore}
-          setIsDetail={setIsDetail}
+          setIsDetail={() => {
+            setIsDetail(true);
+            isIconRef.current = true;
+          }}
+          detailRef={detailRef}
           setSelectedId={setSelectedId}
         />
       </Grid>
@@ -214,6 +236,7 @@ const Variant = () => {
       </Box>
       <VariantCreate open={open} handleClose={handleClose} />
       <Box
+        ref={detailRef}
         position="fixed"
         sx={{
           display: isDetail ? "flex" : "none",
@@ -252,42 +275,107 @@ const Variant = () => {
           <Box sx={{ width: "100%" }}>
             <Box sx={{ m: 3, display: "flex" }}>
               <Box className="w-3/5">
-                <Typography sx={{ m: 2 }}>
-                  Name: {selectedVariant[0].productName}
-                </Typography>
+                <Box className="m-2">
+                  <Typography
+                    variant="p"
+                    className="text-lg text-violet-500 font-bold mx-2"
+                  >
+                    Name:
+                  </Typography>
+                  {selectedVariant[0].productName}
+                </Box>
 
-                <Typography sx={{ m: 2 }}>
-                  Model: {selectedVariant[0].modelName}
-                </Typography>
+                <Box className="m-2">
+                  <Typography
+                    variant="p"
+                    className="text-lg text-violet-500 font-bold mx-2"
+                  >
+                    Model:
+                  </Typography>
+                  {selectedVariant[0].modelName}
+                </Box>
 
-                <Typography sx={{ m: 2 }}>
-                  Size: {selectedVariant[0].sizes.join(", ")}
-                </Typography>
-                <Typography sx={{ m: 2 }}>
-                  Colors: {selectedVariant[0].colors.join(", ")}
-                </Typography>
+                <Box className="m-2">
+                  <Typography
+                    variant="p"
+                    className="text-lg text-violet-500 font-bold mx-2"
+                  >
+                    Size:
+                  </Typography>
+                  {selectedVariant[0].sizes.join(", ")}
+                </Box>
+                <Box className="m-2">
+                  <Typography
+                    variant="p"
+                    className="text-lg text-violet-500 font-bold mx-2"
+                  >
+                    Colors:
+                  </Typography>
+                  {selectedVariant[0].colors.join(", ")}
+                </Box>
 
-                <Typography sx={{ m: 2 }}>
-                  Description: {selectedVariant[0].shortDescription}
-                </Typography>
+                <Box className="m-2">
+                  <Typography
+                    variant="p"
+                    className="text-lg text-violet-500 font-bold mx-2"
+                  >
+                    <Typography
+                      variant="p"
+                      className="text-lg text-violet-500 font-bold mx-2"
+                    >
+                      Description:
+                    </Typography>
+                  </Typography>
+                  {selectedVariant[0].shortDescription}
+                </Box>
               </Box>
               <Box sx={{}}>
-                <Typography sx={{ m: 2 }}>
-                  Brand: {selectedVariant[0].brandName}
-                </Typography>
-                <Typography sx={{ m: 2 }}>
-                  Condition: {selectedVariant[0].condition}
-                </Typography>
+                <Box className="m-2">
+                  <Typography
+                    variant="p"
+                    className="text-lg text-violet-500 font-bold mx-2"
+                  >
+                    Brand:
+                  </Typography>
+                  {selectedVariant[0].brandName}
+                </Box>
+                <Box className="m-2">
+                  <Typography
+                    variant="p"
+                    className="text-lg text-violet-500 font-bold mx-2"
+                  >
+                    Condition:
+                  </Typography>
+                  {selectedVariant[0].condition}
+                </Box>
 
-                <Typography sx={{ m: 2 }}>
-                  Price: {selectedVariant[0].price}ETB
-                </Typography>
-                <Typography sx={{ m: 2 }}>
-                  Amount: {selectedVariant[0].amount}
-                </Typography>
-                <Typography sx={{ m: 2 }}>
-                  Gender: {selectedVariant[0].gender}
-                </Typography>
+                <Box className="m-2">
+                  <Typography
+                    variant="p"
+                    className="text-lg text-violet-500 font-bold mx-2"
+                  >
+                    Price:
+                  </Typography>
+                  {selectedVariant[0].price}ETB
+                </Box>
+                <Box className="m-2">
+                  <Typography
+                    variant="p"
+                    className="text-lg text-violet-500 font-bold mx-2"
+                  >
+                    Amount:
+                  </Typography>
+                  {selectedVariant[0].amount}
+                </Box>
+                <Box className="m-2">
+                  <Typography
+                    variant="p"
+                    className="text-lg text-violet-500 font-bold mx-2"
+                  >
+                    Gender:
+                  </Typography>
+                  {selectedVariant[0].gender}
+                </Box>
               </Box>
             </Box>
             <Box sx={{ display: "flex", m: 3 }}>
@@ -342,8 +430,12 @@ const Variant = () => {
       ) : (
         <VariantTable
           variants={variantByStores}
-          setIsDetail={setIsDetail}
+          setIsDetail={() => {
+            setIsDetail(true);
+            isIconRef.current = true;
+          }}
           setSelectedId={setSelectedId}
+          detailRef={detailRef}
         />
       )}
     </Box>

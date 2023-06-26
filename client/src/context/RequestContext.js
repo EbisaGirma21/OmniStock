@@ -74,12 +74,12 @@ const RequestProvider = ({ children }) => {
     }
   };
 
-  // // real time require
-  // useEffect(() => {
-  //   const pollingInterval = 500; // Polling interval in milliseconds (e.g., every 5 seconds)
-  //   const intervalId = setInterval(fetchRequests, pollingInterval);
-  //   return () => clearInterval(intervalId);
-  // }, []);
+  // real time require
+  useEffect(() => {
+    const pollingInterval = 500; // Polling interval in milliseconds (e.g., every 5 seconds)
+    const intervalId = setInterval(fetchRequests, pollingInterval);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const valueToShare = {
     requests,

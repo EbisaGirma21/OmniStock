@@ -24,30 +24,12 @@ import { PurchaseProvider } from "./context/PurchaseContext";
 import Purchase from "./pages/Purchase/Purchase";
 import { RequestProvider } from "./context/RequestContext";
 import Request from "./pages/Request/Request";
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import Product from "./pages/Home/components/Product";
 import ProductDetail from "./pages/Home/components/ProductDetail";
 
 function App() {
   const { user } = useContext(AuthContext);
-
-  const [isVisible, setIsVisible] = useState(false);
-
-  const handleScroll = () => {
-    const scrollTop = window.pageYOffset;
-    setIsVisible(scrollTop > 0);
-  };
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   const ProtectedRouteAdmin = ({ children }) => {
     if (!user) {
@@ -68,9 +50,9 @@ function App() {
 
   return (
     <Box>
-      {isVisible && (
-        <Button
-          onClick={scrollToTop}
+      {
+        <IconButton
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           style={{
             position: "fixed",
             bottom: "16px",
@@ -78,7 +60,6 @@ function App() {
             background: "#4CCEAC",
             color: "#fff",
             width: "50px",
-            height: "90px",
             "&:hover": {
               bottom: "28px",
               marginBottom: "28px",
@@ -88,8 +69,8 @@ function App() {
           }}
         >
           ↑
-        </Button>
-      )}
+        </IconButton>
+      }
       <BrowserRouter>
         <Routes>
           <Route path="/">

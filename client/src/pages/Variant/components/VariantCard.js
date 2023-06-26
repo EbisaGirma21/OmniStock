@@ -27,7 +27,12 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-export default function VariantCard({ variant, setIsDetail, setSelectedId }) {
+export default function VariantCard({
+  variant,
+  setIsDetail,
+  setSelectedId,
+  detailRef,
+}) {
   const [expanded, setExpanded] = useState(false);
   // component states
   const [deleteOpen, setdDeleteOpen] = useState(false);
@@ -137,6 +142,7 @@ export default function VariantCard({ variant, setIsDetail, setSelectedId }) {
       />
       <CardActions disableSpacing>
         <Link
+          ref={detailRef}
           onClick={() => {
             handleDetailClick(variant._id);
           }}
