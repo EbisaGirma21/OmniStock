@@ -5,14 +5,14 @@ const {
   transferVariant,
   getTransfers,
 } = require("../controllers/transferController");
-const requireAuth = require("../middleware/requireAuth");
+const {adminRequireAuth} = require("../middleware/requireAuth");
 
 const router = express.Router();
 
 // transfer route  (requires authorization)
-router.patch("/", transferVariant);
+router.patch("/", adminRequireAuth, transferVariant);
 
 // get route  (requires authorization)
-router.get("/", getTransfers);
+router.get("/", adminRequireAuth, getTransfers);
 
 module.exports = router;

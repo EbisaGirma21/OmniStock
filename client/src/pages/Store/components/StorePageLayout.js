@@ -45,10 +45,20 @@ function StorePageLayout({ children }) {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.post("http://localhost:4040/api/store", {
-        storeName,
-        storeLocation,
-      });
+      const response = await axios.post(
+        "http://localhost:4040/api/store",
+        {
+          storeName,
+          storeLocation,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+            Role: user.role,
+          },
+        }
+      );
 
       if (response.status !== 200) {
         setError(response.data.error);
@@ -57,7 +67,13 @@ function StorePageLayout({ children }) {
       } else {
         clearForm();
         setOpenModal(false);
-        fetch("http://localhost:4040/api/store")
+        fetch("http://localhost:4040/api/store", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+            Role: user.role,
+          },
+        })
           .then((response) => response.json())
           .then((data) => setStores(data));
         const updatedStores = [...stores, response.data];
@@ -89,12 +105,12 @@ function StorePageLayout({ children }) {
   const updateStore = async (editedRow) => {
     const response = await axios.patch(
       `http://localhost:4040/api/store/${rowToEdit}`,
+      editedRow,
       {
-        method: "PATCH",
-        body: editedRow,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
+          Role: user.role,
         },
       }
     );
@@ -103,12 +119,18 @@ function StorePageLayout({ children }) {
       setIsLoading(false);
       return false;
     } else {
-      fetch("http://localhost:4040/api/store")
+      fetch("http://localhost:4040/api/store", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+          Role: user.role,
+        },
+      })
         .then((response) => response.json())
         .then((data) => setStores(data));
       handleModalClose();
       toast.info("Store updated successfully");
-      return true
+      return true;
     }
   };
 
@@ -120,7 +142,14 @@ function StorePageLayout({ children }) {
   const deleteStore = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:4040/api/store/${rowToDelete}`
+        `http://localhost:4040/api/store/${rowToDelete}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+            Role: user.role,
+          },
+        }
       );
 
       if (response.status !== 200) {

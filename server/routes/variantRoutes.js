@@ -8,12 +8,12 @@ const {
   deleteVariant,
   updateVariant,
 } = require("../controllers/variantController");
-const requireAuth = require("../middleware/requireAuth");
+const { requireAuth } = require("../middleware/requireAuth");
 
 const router = express.Router();
 
 // signup route
-router.post("/", createVariant);
+router.post("/", requireAuth, createVariant);
 
 // GET all Variants (requires authentication)
 router.get("/", getVariants);
@@ -22,9 +22,9 @@ router.get("/", getVariants);
 router.get("/:id", getVariant);
 
 // DELETE a Variant (requires authentication)
-router.delete("/:id", deleteVariant);
+router.delete("/:id", requireAuth, deleteVariant);
 
 // UPDATE a Variant (requires authentication)
-router.patch("/:id", updateVariant);
+router.patch("/:id", requireAuth, updateVariant);
 
 module.exports = router;

@@ -10,18 +10,45 @@ import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import { useContext, useEffect } from "react";
 import VariantsContext from "../../context/VariantContext";
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
-
+import SellsContext from "../../context/SellContext";
+import RequestsContext from "../../context/RequestContext";
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   const { variants, fetchVariants } = useContext(VariantsContext);
+  const { sells, fetchSells } = useContext(SellsContext);
+  const { requests, fetchRequests } = useContext(RequestsContext);
 
+  // varinats/products
   useEffect(() => {
     fetchVariants();
     // eslint-disable-next-line
   }, []);
+
+  // sells
+  useEffect(() => {
+    fetchSells();
+    // eslint-disable-next-line
+  }, []);
+
+  // all sells
+  const totalPrices = sells.reduce(
+    (acc, sell) => acc + parseFloat(sell.totalPrice),
+    0
+  );
+
+  // requests
+  useEffect(() => {
+    fetchRequests();
+    // eslint-disable-next-line
+  }, []);
+
+  // not approved request
+  const notApproved = requests.filter((request) => {
+    return request.requestStatus !== "Approved";
+  });
 
   return (
     <Box m="40px">
@@ -73,7 +100,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="431,225"
+            title={sells.length}
             subtitle="Sales Obtained"
             progress="0.50"
             increase="+21%"
@@ -92,8 +119,8 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="5"
-            subtitle="Product out of stock"
+            title={notApproved.length}
+            subtitle="Request"
             progress="0.30"
             icon={
               <ReportProblemIcon
@@ -129,7 +156,7 @@ const Dashboard = () => {
                 fontWeight="bold"
                 color={colors.greenAccent[500]}
               >
-                $59,342.32
+                {totalPrices}ETB
               </Typography>
             </Box>
           </Box>

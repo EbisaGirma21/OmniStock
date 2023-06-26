@@ -14,7 +14,7 @@ function Table() {
   const columns = [
     { field: "storeName", headerName: "Store name", width: 150 },
     { field: "storeLocation", headerName: "Location", width: 150 },
-    { field: "amount", headerName: "Amount", width: 100 },
+    { field: "product", headerName: "Amount", width: 100 },
     {
       field: "",
       headerName: "Actions",

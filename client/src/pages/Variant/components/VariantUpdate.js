@@ -103,8 +103,9 @@ const VariantUpdate = (props) => {
   };
 
   // submit functions
-  const handleSubmit = () => {
-    editVariantById(
+  const handleSubmit = (e) => {
+    e.preventDefault()
+   const success= editVariantById(
       variantId,
       productName,
       brandName,
@@ -117,6 +118,20 @@ const VariantUpdate = (props) => {
       gender,
       shortDescription
     );
+    if (success) {
+      setProductName("");
+      setBrandName("");
+      setModelName("");
+      setCondition("");
+      setGender("");
+      setPrice("");
+      setColors([]);
+      setSizes([]);
+      setAmount("");
+      setShortDescription("");
+      handleClose();
+    }
+
   };
 
   return (
@@ -242,8 +257,6 @@ const VariantUpdate = (props) => {
               onChange={handleImageChange}
             />
           </Box>
-
-         
         </Box>
       </form>
     </Modal>

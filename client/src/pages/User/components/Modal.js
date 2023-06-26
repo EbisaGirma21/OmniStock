@@ -36,8 +36,16 @@ function Modal({ role }) {
   } = useContext(StoreManagerPageProvider);
   const { stores, setStores } = useContext(StorePageProvider);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
-    fetch("http://localhost:4040/api/store")
+    fetch("http://localhost:4040/api/store", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+        Role: user.role,
+      },
+    })
       .then((response) => response.json())
       .then((data) => setStores(data));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -173,43 +181,42 @@ function Modal({ role }) {
                     label="Male"
                   />
                   <FormControlLabel
-                    value="Memale"
+                    value="Female"
                     control={<Radio />}
                     label="Female"
                   />
                 </Box>
               </RadioGroup>
             </Grid>
-           
-              <Grid
-                item
-                textAlign="center"
-                xs={6}
-                sx={{ display: role === "admin" ? "none" : "block" }}
-              >
-                <FormControl sx={{ width: "230px" }}>
-                  <InputLabel id="demo-simple-select-label">Store</InputLabel>
 
-                  <Select
-                    sx={{
-                      textAlign: "start",
-                    }}
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={formValues.store}
-                    name="store"
-                    label="Store"
-                    onChange={handleInputChange}
-                  >
-                    {storeOption.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-          
+            <Grid
+              item
+              textAlign="center"
+              xs={6}
+              sx={{ display: role === "admin" ? "none" : "block" }}
+            >
+              <FormControl sx={{ width: "230px" }}>
+                <InputLabel id="demo-simple-select-label">Store</InputLabel>
+
+                <Select
+                  sx={{
+                    textAlign: "start",
+                  }}
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={formValues.store}
+                  name="store"
+                  label="Store"
+                  onChange={handleInputChange}
+                >
+                  {storeOption.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
           </Grid>
           <Divider />
           <StyledBoxFlex mt={2}>

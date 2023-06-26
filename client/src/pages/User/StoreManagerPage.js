@@ -26,7 +26,9 @@ export default function UserManagment() {
   useEffect(() => {
     fetch("http://localhost:4040/api/user", {
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${user.token}`,
+        Role: user.role,
       },
     })
       .then((response) => response.json())

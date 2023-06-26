@@ -53,7 +53,13 @@ function NavBar() {
 
   useEffect(() => {
     user.store &&
-      fetch(`http://localhost:4040/api/store/${user.store}`)
+      fetch(`http://localhost:4040/api/store/${user.store}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+          Role: user.role,
+        },
+      })
         .then((response) => response.json())
         .then((data) => setStores(data));
     // eslint-disable-next-line react-hooks/exhaustive-deps

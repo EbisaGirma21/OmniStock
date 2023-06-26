@@ -42,8 +42,16 @@ export default function Transfer() {
   );
   const { transferByName } = useContext(TransferContext);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
-    fetch("http://localhost:4040/api/store")
+    fetch("http://localhost:4040/api/store", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+        Role: user.role,
+      },
+    })
       .then((response) => response.json())
       .then((data) => setStores(data));
     // eslint-disable-next-line
@@ -287,8 +295,11 @@ export default function Transfer() {
                     <Box className="w-full flex justify-between">
                       {variant.modelName}
                       <Typography className=" text-green-500">{`${variant.price} ETB`}</Typography>
-                      <IconButton className="w-6 h-6">
-                        <Cancel onClick={handleToggle(variant._id)} />
+                      <IconButton
+                        className="w-6 h-6"
+                        onClick={handleToggle(variant._id)}
+                      >
+                        <Cancel />
                       </IconButton>
                     </Box>
                     <Box className="flex justify-between">

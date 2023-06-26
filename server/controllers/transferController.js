@@ -108,10 +108,6 @@ const transferVariant = async (req, res) => {
       })
     );
 
-    if (+reducedVariants[0].amount < 10) {
-      res.status(210).json({ updatedVariants, reducedVariants });
-    }
-
     res.status(200).json({ updatedVariants, reducedVariants });
   } catch (error) {
     console.error(error);

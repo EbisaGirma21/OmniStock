@@ -9,8 +9,18 @@ const TransferProvider = ({ children }) => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const fetchTransfers = async () => {
-    const response = await axios.get("http://localhost:4040/api/transfer");
-    setTransfers(response.data);
+    try {
+      const response = await axios.get("http://localhost:4040/api/transfer", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+          Role: user.role,
+        },
+      });
+      setTransfers(response.data);
+    } catch (error) {
+      console.error("Error fetching transfers:", error);
+    }
   };
 
   const transferByName = async (
@@ -31,14 +41,16 @@ const TransferProvider = ({ children }) => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
+          Role: user.role,
         },
       }
     );
     if (response.status === 200) {
-      toast.success("Product transfered successfully");
-      fetchTransfers();
-    } else if (response.status === 210) {
-      toast.warning("Product transfered successfully with warning");
+      if (response.data.reducedVariants[0].amount < 10) {
+        toast.warning("Product transfered successfully with warning");
+      } else {
+        toast.success("Product transfered successfully");
+      }
       fetchTransfers();
     } else {
       toast.error("Failed to transfer Product");

@@ -72,8 +72,9 @@ function StoreManagerPageLayout({ children }) {
         },
         {
           headers: {
-            "Content-type": "application/json",
+            "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
+            Role: user.role,
           },
         }
       );
@@ -82,8 +83,9 @@ function StoreManagerPageLayout({ children }) {
         clearForm();
         fetch("http://localhost:4040/api/user", {
           headers: {
-            "Content-type": "application/json",
+            "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
+            Role: user.role,
           },
         })
           .then((response) => response.json())
@@ -121,8 +123,9 @@ function StoreManagerPageLayout({ children }) {
       },
       {
         headers: {
-          "Content-type": "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
+          Role: user.role,
         },
       }
     );
@@ -131,7 +134,9 @@ function StoreManagerPageLayout({ children }) {
     } else {
       fetch("http://localhost:4040/api/user", {
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
+          Role: user.role,
         },
       })
         .then((response) => response.json())
@@ -151,8 +156,9 @@ function StoreManagerPageLayout({ children }) {
       `http://localhost:4040/api/user/${rowToDelete}`,
       {
         headers: {
-          "Content-type": "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
+          Role: user.role,
         },
       }
     );

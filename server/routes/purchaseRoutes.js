@@ -5,20 +5,18 @@ const {
   getPurchases,
   getPurchase,
   createPurchase,
- 
 } = require("../controllers/purchaseController");
-const requireAuth = require("../middleware/requireAuth");
+const {requireAuth} = require("../middleware/requireAuth");
 
 const router = express.Router();
 
 // signup route
-router.post("/", createPurchase);
+router.post("/", requireAuth, createPurchase);
 
 // GET all Purchases (requires authentication)
-router.get("/", getPurchases);
+router.get("/", requireAuth, getPurchases);
 
 // GET a single Purchase (requires authentication)
-router.get("/:id", getPurchase);
-
+router.get("/:id", requireAuth, getPurchase);
 
 module.exports = router;

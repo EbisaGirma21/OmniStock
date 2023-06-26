@@ -6,9 +6,17 @@ const RequestsContext = createContext();
 const RequestProvider = ({ children }) => {
   const [requests, setRequests] = useState([]);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const fetchRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:4040/api/request");
+      const response = await axios.get("http://localhost:4040/api/request", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+          Role: user.role,
+        },
+      });
       setRequests(response.data);
     } catch (error) {
       console.error("Error fetching requests:", error);
@@ -17,14 +25,24 @@ const RequestProvider = ({ children }) => {
 
   const createRequest = async (requester, variant, store) => {
     try {
-      const response = await axios.post("http://localhost:4040/api/request", {
-        store,
-        requester,
-        variant,
-        requestType: "Transfer",
-        requestStatus: "Requested",
-        readStatus: "notSeen",
-      });
+      const response = await axios.post(
+        "http://localhost:4040/api/request",
+        {
+          store,
+          requester,
+          variant,
+          requestType: "Transfer",
+          requestStatus: "Requested",
+          readStatus: "notSeen",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+            Role: user.role,
+          },
+        }
+      );
 
       const updatedRequests = [...requests, response.data];
       setRequests(updatedRequests);
@@ -35,10 +53,20 @@ const RequestProvider = ({ children }) => {
 
   const updateRequest = async (id) => {
     try {
-      await axios.patch(`http://localhost:4040/api/request/${id}`, {
-        readStatus: "seen",
-        requestStatus: "Pending",
-      });
+      await axios.patch(
+        `http://localhost:4040/api/request/${id}`,
+        {
+          readStatus: "seen",
+          requestStatus: "Pending",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+            Role: user.role,
+          },
+        }
+      );
 
       fetchRequests();
     } catch (error) {

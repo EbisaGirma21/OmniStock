@@ -1,12 +1,23 @@
 const Store = require("../models/storeModel");
 const mongoose = require("mongoose");
+const Variant = require("../models/variantModel");
 // get all Stores
 const getStores = async (req, res) => {
   const stores = await Store.find({});
   if (!stores) {
     return res.status(404).json({ error: "No such stores" });
   }
-  res.status(200).json(stores);
+  const storeData = await Promise.all(
+    stores.map(async (store) => {
+      const variant = await Variant.find({ store: store._id.toString() });
+      return {
+        ...store._doc,
+        product: variant.length,
+      };
+    })
+  );
+
+  res.status(200).json(storeData);
 };
 
 // get a single Store
@@ -71,7 +82,6 @@ const deleteStore = async (req, res) => {
   res.status(200).json(store);
 };
 
-
 // update a Store
 const updateStore = async (req, res) => {
   const { id } = req.params;
@@ -93,10 +103,6 @@ const updateStore = async (req, res) => {
 
   res.status(200).json(store);
 };
-
-
-
-
 
 module.exports = {
   getStores,

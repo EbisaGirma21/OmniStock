@@ -8,23 +8,24 @@ const {
   deleteStore,
   updateStore,
 } = require("../controllers/storeController");
-const requireAuth = require("../middleware/requireAuth");
+const {requireAuth,adminRequireAuth} = require("../middleware/requireAuth");
+
 
 const router = express.Router();
 
 // GET all Stores
-router.get("/", getStores);
+router.get("/", requireAuth, getStores);
 
 // GET a single Store
-router.get("/:id", getStore);
+router.get("/:id", requireAuth, getStore);
 
 // post route
-router.post("/", createStore);
+router.post("/", adminRequireAuth, createStore);
 
 // DELETE a Store
-router.delete("/:id", deleteStore);
+router.delete("/:id", adminRequireAuth, deleteStore);
 
 // UPDATE a Store
-router.patch("/:id", updateStore);
+router.patch("/:id", adminRequireAuth, updateStore);
 
 module.exports = router;

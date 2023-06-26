@@ -7,30 +7,39 @@ const mongoose = require("mongoose");
 
 // get all Sells
 const getSells = async (req, res) => {
-  const sells = await Sell.find({}).sort({ createdAt: -1 });
-  const sellsData = await Promise.all(
-    sells.map(async (sell) => {
-      const variant = await Variant.findById(sell.variantId.toString());
-      const stores = await Store.findById(variant.store.toString());
-      const user = await User.findById(sell.seller.toString());
-      const productCatagory = await ProductCatagory.findById(
-        variant.productCatagory.toString()
-      );
-      return {
-        sellerName: `${user.firstName}(${user.email})`,
-        storeName: stores
-          ? `${stores.storeLocation}(${stores.storeName})`
-          : null,
-        productCatagory: productCatagory.productCatagoryName,
-        product: variant.productName,
-        brand: variant.brandName,
-        store: stores._id,
-        ...sell._doc,
-      };
-    })
-  );
+  try {
+    const sells = await Sell.find({}).sort({ createdAt: -1 });
+    const sellsData = await Promise.all(
+      sells.map(async (sell) => {
+        const variant = await Variant.findById(sell.variantId.toString());
+        const stores = await Store.findById(variant.store.toString());
+        const user = await User.findById(sell.seller.toString());
+        const productCatagory = await ProductCatagory.findById(
+          variant.productCatagory.toString()
+        );
 
-  res.status(200).json(sellsData);
+        const totalPrice = parseFloat(sell.price) * parseFloat(sell.amount);
+
+        return {
+          sellerName: `${user.firstName}(${user.email})`,
+          storeName: stores
+            ? `${stores.storeLocation}(${stores.storeName})`
+            : null,
+          productCatagory: productCatagory.productCatagoryName,
+          product: variant.productName,
+          brand: variant.brandName,
+          store: stores._id,
+          totalPrice: totalPrice.toFixed(2),
+          ...sell._doc,
+        };
+      })
+    );
+
+    res.status(200).json(sellsData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
 };
 
 // get a single Sell

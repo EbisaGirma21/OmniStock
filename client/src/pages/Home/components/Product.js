@@ -4,6 +4,7 @@ import Header from "../../../components/UI/Header";
 import Footer from "../../../components/UI/Footer";
 import VariantsContext from "../../../context/VariantContext";
 import { useNavigate } from "react-router-dom";
+import Spinner from "../../../components/UI/Spinner";
 
 const Product = () => {
   const { variants, fetchVariants } = useContext(VariantsContext);
@@ -26,34 +27,42 @@ const Product = () => {
 
   const handleProductClick = (name) => {
     navigate(":detail");
-    localStorage.setItem('selectedName', name);
+    localStorage.setItem("selectedName", name);
   };
   return (
     <Box>
-      <Header />
-      <Box>
-        <Box className="mt-32 mx-64">
-          <Grid container spacing={1}>
-            {uniqueVariants.map((variant) => {
-              return (
-                <Grid key={variant._id} item xs={12} sm={6} md={4} lg={3}>
-                  <Box
-                    className=" w-full h-full flex flex-col bg-white"
-                    onClick={() => handleProductClick(variant.modelName)}
-                  >
-                    <img
-                      src={variant.images[0].url}
-                      alt=""
-                      className="h-64 w-full object-contain"
-                    />
-                    {variant.modelName}
-                  </Box>
-                </Grid>
-              );
-            })}
-          </Grid>
+      <Header  isLogin={true}/>
+      {variants.length === 0 ? (
+        <Box className=" mt-64 flex justify-center items-start ">
+          <Spinner className="" />
         </Box>
-      </Box>
+      ) : (
+        <Box>
+          <Box>
+            <Box className="mt-32 mx-64">
+              <Grid container spacing={1}>
+                {uniqueVariants.map((variant) => {
+                  return (
+                    <Grid key={variant._id} item xs={12} sm={6} md={4} lg={3}>
+                      <Box
+                        className=" w-full h-full flex flex-col bg-white"
+                        onClick={() => handleProductClick(variant.modelName)}
+                      >
+                        <img
+                          src={variant.images[0].url}
+                          alt=""
+                          className="h-64 w-full object-contain"
+                        />
+                        {variant.modelName}
+                      </Box>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </Box>
+          </Box>
+        </Box>
+      )}
       <Footer />
     </Box>
   );

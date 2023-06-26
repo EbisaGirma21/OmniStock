@@ -8,12 +8,12 @@ const {
   deleteProductCatagory,
   updateProductCatagory,
 } = require("../controllers/productCatagoryController");
-const requireAuth = require("../middleware/requireAuth");
+const { requireAuth, adminRequireAuth } = require("../middleware/requireAuth");
 
 const router = express.Router();
 
 // signup route
-router.post("/", createProductCatagory);
+router.post("/", adminRequireAuth, createProductCatagory);
 
 // GET all ProductCatagorys (requires authentication)
 router.get("/", getProductCatagorys);
@@ -22,9 +22,9 @@ router.get("/", getProductCatagorys);
 router.get("/:id", getProductCatagory);
 
 // DELETE a ProductCatagory (requires authentication)
-router.delete("/:id", deleteProductCatagory);
+router.delete("/:id", adminRequireAuth, deleteProductCatagory);
 
 // UPDATE a ProductCatagory (requires authentication)
-router.patch("/:id", updateProductCatagory);
+router.patch("/:id", requireAuth, updateProductCatagory);
 
 module.exports = router;

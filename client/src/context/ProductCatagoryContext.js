@@ -31,6 +31,13 @@ const ProductCatagoryProvider = ({ children }) => {
         {
           productCatagoryName: newproductCatagoryName,
           productNames: newProductNames,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+            Role: user.role,
+          },
         }
       );
       if (response.status !== 200) {
@@ -59,7 +66,14 @@ const ProductCatagoryProvider = ({ children }) => {
   const deleteProductCatagoryById = async (id) => {
     try {
       const response = await axios.delete(
-        `http://localhost:4040/api/productCatagory/${id}`
+        `http://localhost:4040/api/productCatagory/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+            Role: user.role,
+          },
+        }
       );
 
       if (response.status !== 200) {
@@ -100,6 +114,7 @@ const ProductCatagoryProvider = ({ children }) => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
+            Role: user.role,
           },
         }
       );

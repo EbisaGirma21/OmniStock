@@ -4,7 +4,7 @@ import VariantsContext from "../../context/VariantContext";
 import { useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import AddIcon from "@mui/icons-material/Add";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import VariantCreate from "./components/VariantCreate";
 import { useState } from "react";
 import SellsContext from "../../context/SellContext";
@@ -13,6 +13,7 @@ import SellDialog from "./components/SellDialog";
 import PurchaseDialog from "./components/PurchaseDialog";
 import ProductCatagoryContext from "../../context/ProductCatagoryContext";
 import VariantTable from "./components/VariantTable";
+import { Cancel } from "@mui/icons-material";
 
 const Variant = () => {
   // from local storage
@@ -321,16 +322,16 @@ const Variant = () => {
           </Box>
         )}
         {isDetail && (
-          <Button
+          <IconButton
             variant="contained"
             onClick={() => {
               setIsDetail(false);
               setSelectedId("");
             }}
-            className="h-full"
+            className="mt-0"
           >
-            Hide
-          </Button>
+            <Cancel />
+          </IconButton>
         )}
       </Box>
 

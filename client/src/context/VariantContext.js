@@ -11,8 +11,12 @@ const VariantProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(null);
 
   const fetchVariants = async () => {
-    const response = await axios.get("http://localhost:4040/api/variant");
-    setVariants(response.data);
+    try {
+      const response = await axios.get("http://localhost:4040/api/variant");
+      setVariants(response.data);
+    } catch (error) {
+      console.error("Error fetching transfers:", error);
+    }
   };
 
   const editVariantById = async (
@@ -31,42 +35,64 @@ const VariantProvider = ({ children }) => {
     setIsLoading(true);
     setError(null);
 
-    const response = await axios.patch(
-      `http://localhost:4040/api/variant/${id}`,
-      {
-        productName: newProductName,
-        brandName: newBrandName,
-        modelName: newModelName,
-        sizes: newSizes,
-        colors: newColors,
-        price: newPrice,
-        amount: newAmount,
-        condition: newCondition,
-        gender: newGender,
-        shortDescription: newShortDescription,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
+    try {
+      const response = await axios.patch(
+        `http://localhost:4040/api/variant/${id}`,
+        {
+          productName: newProductName,
+          brandName: newBrandName,
+          modelName: newModelName,
+          sizes: newSizes,
+          colors: newColors,
+          price: newPrice,
+          amount: newAmount,
+          condition: newCondition,
+          gender: newGender,
+          shortDescription: newShortDescription,
         },
-      }
-    );
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+            Role: user.role,
+          },
+        }
+      );
 
-    const updatedVariants = variants.map((variant) => {
-      if (variant.id === id) {
-        return { ...variant, ...response.data };
+      if (response.status !== 200) {
+      } else {
+        const updatedVariants = variants.map((variant) => {
+          if (variant.id === id) {
+            return { ...variant, ...response.data };
+          }
+          return variant;
+        });
+        fetchVariants();
+        setVariants(updatedVariants);
+        toast.info("Product updated successfully");
       }
-      return variant;
-    });
-    fetchVariants();
-    setVariants(updatedVariants);
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.error);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        toast.error("Failed to update product catagory");
+        return false;
+      }
+    }
   };
-
   const deleteVariantById = async (id) => {
     try {
       const response = await axios.delete(
-        `http://localhost:4040/api/variant/${id}`
+        `http://localhost:4040/api/variant/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+            Role: user.role,
+          },
+        }
       );
       if (response.status !== 200) {
         toast.error(response.data.error);
@@ -123,6 +149,7 @@ const VariantProvider = ({ children }) => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
+            Role: user.role,
           },
         }
       );

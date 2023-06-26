@@ -53,7 +53,7 @@ const Header = ({ isLogin }) => {
           <StyledLink to="/">Home</StyledLink>
           <StyledLink to="/">About</StyledLink>
           <StyledLink to="/">Contact</StyledLink>
-          {isLogin && <StyledLink to="login">Login</StyledLink>}
+          {isLogin && <StyledLink to="/login">Login</StyledLink>}
         </Box>
       </Toolbar>
     </AppBar>

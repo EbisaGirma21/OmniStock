@@ -9,7 +9,7 @@ import StoreManagerPageLayout from "./pages//User/components/StoreManagerPageLay
 import StorePageLayout from "./pages//Store/components/StorePageLayout";
 import UserManagment from "./pages/User/StoreManagerPage";
 import Admin from "./pages/Admin/Admin";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import AuthContext from "./context/AuthContext";
 import ProductCatagory from "./pages/ProductCatagory/ProductCatagory";
 import { ProductCatagoryProvider } from "./context/ProductCatagoryContext";
@@ -24,12 +24,31 @@ import { PurchaseProvider } from "./context/PurchaseContext";
 import Purchase from "./pages/Purchase/Purchase";
 import { RequestProvider } from "./context/RequestContext";
 import Request from "./pages/Request/Request";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import Product from "./pages/Home/components/Product";
 import ProductDetail from "./pages/Home/components/ProductDetail";
 
 function App() {
   const { user } = useContext(AuthContext);
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  const handleScroll = () => {
+    const scrollTop = window.pageYOffset;
+    setIsVisible(scrollTop > 0);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const ProtectedRouteAdmin = ({ children }) => {
     if (!user) {
       return <Navigate to="/login" />;
@@ -46,8 +65,31 @@ function App() {
     }
     return children;
   };
+
   return (
     <Box>
+      {isVisible && (
+        <Button
+          onClick={scrollToTop}
+          style={{
+            position: "fixed",
+            bottom: "16px",
+            right: "16px",
+            background: "#4CCEAC",
+            color: "#fff",
+            width: "50px",
+            height: "90px",
+            "&:hover": {
+              bottom: "28px",
+              marginBottom: "28px",
+              background: "#4CCEAC",
+              transition: "ease-in-out 0.7s",
+            },
+          }}
+        >
+          ↑
+        </Button>
+      )}
       <BrowserRouter>
         <Routes>
           <Route path="/">
@@ -96,7 +138,11 @@ function App() {
               element={
                 user && (user.role === "super" || user.role === "admin") ? (
                   <VariantProvider>
-                    <Dashboard />
+                    <SellProvider>
+                      <RequestProvider>
+                        <Dashboard />
+                      </RequestProvider>
+                    </SellProvider>
                   </VariantProvider>
                 ) : (
                   <Admin />
@@ -134,7 +180,9 @@ function App() {
                   <ProductCatagoryProvider>
                     <VariantProvider>
                       <TransferProvider>
-                        <Transfer />
+                        <ProtectedRouteAdmin>
+                          <Transfer />
+                        </ProtectedRouteAdmin>
                       </TransferProvider>
                     </VariantProvider>
                   </ProductCatagoryProvider>
@@ -182,7 +230,9 @@ function App() {
                 index
                 element={
                   <StorePageLayout>
-                    <Store />
+                    <ProtectedRouteAdmin>
+                      <Store />
+                    </ProtectedRouteAdmin>
                   </StorePageLayout>
                 }
               />
