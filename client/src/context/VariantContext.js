@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -176,6 +176,12 @@ const VariantProvider = ({ children }) => {
       }
     }
   };
+
+  useEffect(() => {
+    const pollingInterval = 500; // Polling interval in milliseconds (e.g., every 5 seconds)
+    const intervalId = setInterval(fetchVariants, pollingInterval);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const valueToShare = {
     error,

@@ -55,7 +55,8 @@ const Home = () => {
     localStorage.setItem("selectedName", name);
   };
 
-  const handleCatagoryClick = () => {
+  const handleCatagoryClick = (product) => {
+    localStorage.setItem("selectedProduct", product);
     navigate("/:product");
   };
 
@@ -140,7 +141,7 @@ const Home = () => {
                     >
                       <Box
                         className="flex items-center"
-                        onClick={handleCatagoryClick}
+                        onClick={() => handleCatagoryClick(product.name)}
                       >
                         <img
                           src={product.image.url}

@@ -7,7 +7,7 @@ import { Delete, Edit } from "@mui/icons-material";
 import VariantUpdate from "./VariantUpdate";
 import VariantDelete from "./VariantDelete";
 
-function VariantTable({ variants, setIsDetail, setSelectedId, detailRef }) {
+function VariantTable({ variants, setIsDetail, setSelectedId }) {
   // component states
   const [deleteOpen, setdDeleteOpen] = useState(false);
   const [editOpen, setdEditOpen] = useState(false);
@@ -143,7 +143,7 @@ function VariantTable({ variants, setIsDetail, setSelectedId, detailRef }) {
           <IconButton
             aria-label="view"
             color="primary"
-            ref={detailRef}
+            
             onClick={() => {
               handleDetailClick(params.id);
             }}

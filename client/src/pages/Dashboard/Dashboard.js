@@ -21,6 +21,8 @@ const Dashboard = () => {
   const { sells, fetchSells } = useContext(SellsContext);
   const { requests, fetchRequests } = useContext(RequestsContext);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   // varinats/products
   useEffect(() => {
     fetchVariants();
@@ -46,9 +48,22 @@ const Dashboard = () => {
   }, []);
 
   // not approved request
-  const notApproved = requests.filter((request) => {
-    return request.requestStatus !== "Approved";
+  const notApproved =
+    user.role === "sm"
+      ? requests.filter((request) => {
+          return (
+            request.requestStatus !== "Approved" && request.store === user.store
+          );
+        })
+      : requests.filter((request) => {
+          return request.requestStatus !== "Approved";
+        });
+
+  const filterProduct = variants.filter((variant) => {
+    return variant.store === user.store;
   });
+
+  const pro = user.role === "sm" ? filterProduct : variants;
 
   return (
     <Box m="40px">
@@ -81,7 +96,7 @@ const Dashboard = () => {
           border-radius=" 8px"
         >
           <StatBox
-            title={variants.length}
+            title={user.role === "sm" ? filterProduct.length : variants.length}
             subtitle="All Products"
             progress="0.75"
             increase="+14%"
@@ -202,7 +217,7 @@ const Dashboard = () => {
               Recent Products
             </Typography>
           </Box>
-          {variants.map((variant) => (
+          {pro.map((variant) => (
             <Box
               key={variant._id}
               display="flex"

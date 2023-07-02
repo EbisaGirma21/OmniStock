@@ -84,6 +84,9 @@ function NavBar() {
       request.requestStatus === "Pending"
     );
   });
+  const approvedRequest = requests.filter((request) => {
+    return request.requestStatus === "Approved" && request.store === user.store;
+  });
 
   const requestAmount = requests.filter((request) => {
     return request.requestStatus === "Requested";
@@ -279,6 +282,11 @@ function NavBar() {
 
   const handleSeenRequest = (id, seen) => {
     !seen && updateRequest(id);
+    setIsNotification(!isNotification);
+    storeRequestIdForOneMinute(id);
+    navigate("/request");
+  };
+  const handleSeenApproved = (id) => {
     setIsNotification(!isNotification);
     storeRequestIdForOneMinute(id);
     navigate("/request");
@@ -481,6 +489,56 @@ function NavBar() {
                             sx={styledButton}
                           >
                             {isSent ? "Sent" : "Send Request"}
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Box>
+                  );
+                })}
+
+              {/* Approved request */}
+              {user.role === "sm" &&
+                approvedRequest.map((variant) => {
+                  return (
+                    <Box
+                      key={variant._id}
+                      className="flex p-2 border-b border-t-gray-300 hover:bg-slate-200"
+                    >
+                      <img
+                        src={require("../assets/store.png")}
+                        alt="store"
+                        className=" rounded-full object-contain w-12 h-12 bg-green-200"
+                      />
+                      <Box className="text-blue-950 px-2 py-3 h-32">
+                        <Box className=" text-sm flex justify-between">
+                          <Typography variant="p" className=" font-semibold	">
+                            Approved:
+                          </Typography>
+                          <Typography variant="p" className="text-xs">
+                            {formatDistanceToNow(new Date(variant.updatedAt), {
+                              addSuffiX: true,
+                            })}
+                          </Typography>
+                        </Box>
+
+                        <Box className="text-xs flex justify-center p-2">
+                          <Typography
+                            variant="p"
+                            className="text-xs whitespace-break-spaces "
+                          >
+                            {variant.modelName} goes under threshold value.
+                            Request for transfer as soon as possible
+                          </Typography>
+                        </Box>
+                        <Box className="flex justify-start">
+                          <button className="text-red-500 text-sm  bg-red-200 lowercase p-1 rounded-full px-2 !important m-1 ">
+                            approved
+                          </button>
+                          <Button
+                            onClick={() => handleSeenApproved(variant._id)}
+                            sx={styledButton}
+                          >
+                            View
                           </Button>
                         </Box>
                       </Box>

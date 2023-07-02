@@ -24,7 +24,7 @@ import { PurchaseProvider } from "./context/PurchaseContext";
 import Purchase from "./pages/Purchase/Purchase";
 import { RequestProvider } from "./context/RequestContext";
 import Request from "./pages/Request/Request";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import Product from "./pages/Home/components/Product";
 import ProductDetail from "./pages/Home/components/ProductDetail";
 
@@ -117,17 +117,13 @@ function App() {
             <Route
               path="dashboard"
               element={
-                user && (user.role === "super" || user.role === "admin") ? (
-                  <VariantProvider>
-                    <SellProvider>
-                      <RequestProvider>
-                        <Dashboard />
-                      </RequestProvider>
-                    </SellProvider>
-                  </VariantProvider>
-                ) : (
-                  <Admin />
-                )
+                <VariantProvider>
+                  <SellProvider>
+                    <RequestProvider>
+                      <Dashboard />
+                    </RequestProvider>
+                  </SellProvider>
+                </VariantProvider>
               }
             />
             <Route

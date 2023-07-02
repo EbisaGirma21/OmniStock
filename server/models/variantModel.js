@@ -44,6 +44,7 @@ const VariantSchema = mongoose.Schema(
     amount: {
       type: Number,
       required: true,
+      min: 0,
     },
     condition: {
       type: String,

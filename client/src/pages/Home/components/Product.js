@@ -10,9 +10,13 @@ const Product = () => {
   const { variants, fetchVariants } = useContext(VariantsContext);
   const navigate = useNavigate();
 
+  const filtered = variants.filter((variant) => {
+    return variant.productName === localStorage.getItem("selectedProduct");
+  });
+
   // making varinat unique
   const uniqueVariants = Object.values(
-    variants.reduce((uniqueMap, variant) => {
+    filtered.reduce((uniqueMap, variant) => {
       if (!uniqueMap[variant.modelName]) {
         uniqueMap[variant.modelName] = variant;
       }
@@ -31,7 +35,7 @@ const Product = () => {
   };
   return (
     <Box>
-      <Header  isLogin={true}/>
+      <Header isLogin={true} />
       {variants.length === 0 ? (
         <Box className=" mt-64 flex justify-center items-start ">
           <Spinner className="" />

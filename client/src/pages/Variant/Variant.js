@@ -1,5 +1,5 @@
 import VariantCard from "./components/VariantCard";
-import { useContext, useRef } from "react";
+import { useContext } from "react";
 import VariantsContext from "../../context/VariantContext";
 import { useEffect } from "react";
 import Grid from "@mui/material/Grid";
@@ -36,8 +36,6 @@ const Variant = () => {
   const { productCatagories, fetchProductCatagories } = useContext(
     ProductCatagoryContext
   );
-
-  const isIconRef = useRef(false);
 
   useEffect(() => {
     fetchProductCatagories();
@@ -111,45 +109,25 @@ const Variant = () => {
       ? variants.filter((variant) => {
           return (
             (variant.store === user.store) &
+            (variant._id !== selectedId) &
             (variant.productCatagoryId === productCatagory)
           );
         })
       : variants.filter((variant) => {
           return (
             (variant.store === user.store) &
+            (variant._id !== selectedId) &
             (variant.productName === params) &
             (variant.productCatagoryId === productCatagory)
           );
         });
-
-  const detailRef = useRef(null);
-
-  useEffect(() => {
-    const handleDocumentClick = (event) => {
-      if (detailRef.current && !detailRef.current.contains(event.target)) {
-        if (!isIconRef.current) {
-          setIsDetail(false);
-        }
-        isIconRef.current = false;
-      }
-    };
-    document.addEventListener("click", handleDocumentClick);
-
-    return () => {
-      document.removeEventListener("click", handleDocumentClick);
-    };
-  }, []);
 
   const renderedVariants = variantByStores.map((variantByStore) => {
     return (
       <Grid key={variantByStore._id} item xs={12} sm={6} md={4} lg={3}>
         <VariantCard
           variant={variantByStore}
-          setIsDetail={() => {
-            setIsDetail(true);
-            isIconRef.current = true;
-          }}
-          detailRef={detailRef}
+          setIsDetail={setIsDetail}
           setSelectedId={setSelectedId}
         />
       </Grid>
@@ -236,7 +214,6 @@ const Variant = () => {
       </Box>
       <VariantCreate open={open} handleClose={handleClose} />
       <Box
-        ref={detailRef}
         position="fixed"
         sx={{
           display: isDetail ? "flex" : "none",
@@ -430,12 +407,8 @@ const Variant = () => {
       ) : (
         <VariantTable
           variants={variantByStores}
-          setIsDetail={() => {
-            setIsDetail(true);
-            isIconRef.current = true;
-          }}
+          setIsDetail={setIsDetail}
           setSelectedId={setSelectedId}
-          detailRef={detailRef}
         />
       )}
     </Box>

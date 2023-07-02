@@ -11,7 +11,8 @@ export const generatePDF = (transfers, columns) => {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
 
-  const descriptionText = "this is my discription";
+  const descriptionText =
+    "These products are transfered from Sender srore to Receiver store on listed transfed date";
 
   const descriptionChunks = doc.splitTextToSize(descriptionText, 180);
   let startY = 20;
@@ -28,7 +29,6 @@ export const generatePDF = (transfers, columns) => {
   doc.setFontSize(10);
 
   doc.autoTable({
-  
     head: [columns.map((column) => column.headerName)],
     body: tableData,
     startY: startY + 10, // Set the starting Y position for the table after the description

@@ -113,6 +113,7 @@ userSchema.statics.createUser = async function (
       password: hash,
     });
     sendEmail(email, password);
+    
     return user;
   }
 };

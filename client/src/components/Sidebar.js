@@ -155,11 +155,11 @@ function SideBar() {
           icon: <ImportExportIcon />,
           path: "transfer",
         },
-        {
-          text: <Typography sx={itemTextStyle}>Request</Typography>,
-          icon: <DynamicFormIcon />,
-          path: "request",
-        },
+        // {
+        //   text: <Typography sx={itemTextStyle}>Request</Typography>,
+        //   icon: <DynamicFormIcon />,
+        //   path: "request",
+        // },
       ];
     } else {
       return [
@@ -183,11 +183,11 @@ function SideBar() {
           icon: <MoveDownIcon />,
           path: "purchase",
         },
-        {
-          text: <Typography sx={itemTextStyle}>Request</Typography>,
-          icon: <DynamicFormIcon />,
-          path: "request",
-        },
+        // {
+        //   text: <Typography sx={itemTextStyle}>Request</Typography>,
+        //   icon: <DynamicFormIcon />,
+        //   path: "request",
+        // },
       ];
     }
   }

@@ -6,7 +6,7 @@ const cloudinary = require("../utils/cloudinary");
 
 // get all Variants
 const getVariants = async (req, res) => {
-  const variants = await Variant.find({}).sort({ createdAt: -1 });
+  const variants = await Variant.find({}).sort({ updatedAt: -1 });
   const variantsData = await Promise.all(
     variants.map(async (variant) => {
       const productCatagory = await ProductCatagory.findById(
