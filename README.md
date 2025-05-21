@@ -55,5 +55,5 @@ Contributions to OmniStock are welcome! If you would like to contribute, please 
 
 ## Contact
 
-For any inquiries or feedback, please contact us at [your-email@example.com](mailto:your-email@example.com).
+For any inquiries or feedback, please contact me at [ebisagirma41@example.com](mailto:ebisagirma41@example.com).
 
