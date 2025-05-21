@@ -42,7 +42,7 @@ const Modal = (props) => {
         {/* Modal Title */}
         <DialogTitle
           sx={{
-            backgroundColor: "#1E88E5",
+            backgroundColor: "#5e35b1",
             color: "white",
             borderRadius: 1,
           }}

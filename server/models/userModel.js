@@ -113,7 +113,7 @@ userSchema.statics.createUser = async function (
       password: hash,
     });
     sendEmail(email, password);
-    
+
     return user;
   }
 };
@@ -134,7 +134,7 @@ userSchema.statics.login = async function (email, password) {
   if (!match) {
     throw Error("Incorrect Password");
   }
-
+  console.log(user);
   return user;
 };
 

@@ -26,7 +26,6 @@ const ProductCatagoryCreate = ({ handleClose, open }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setFileToBase(file);
-    console.log(file);
   };
 
   const setFileToBase = (file) => {

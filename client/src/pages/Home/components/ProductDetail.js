@@ -1,9 +1,10 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import Header from "../../../components/UI/Header";
 import Footer from "../../../components/UI/Footer";
 import VariantsContext from "../../../context/VariantContext";
 import Spinner from "../../../components/UI/Spinner";
+import { Link } from "react-router-dom";
 
 const ProductDetail = () => {
   // useState
@@ -205,6 +206,9 @@ const ProductDetail = () => {
                         {variant.storeName}
                       </Typography>
                     ))}
+                    <Link to="pay">
+                      <Button>Pay</Button>
+                    </Link>
                   </Box>
                 </Box>
               </Box>

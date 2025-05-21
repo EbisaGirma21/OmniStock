@@ -38,7 +38,6 @@ const createUser = async (req, res) => {
     store,
   } = req.body;
   const password = "ABCabc123@#";
-  console.log();
   try {
     const user = await User.createUser(
       firstName,

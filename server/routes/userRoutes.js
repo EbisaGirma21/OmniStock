@@ -9,20 +9,20 @@ const {
   deleteUser,
   updateUser,
 } = require("../controllers/userController");
-const {requireAuth,adminRequireAuth} = require("../middleware/requireAuth");
+const { requireAuth, adminRequireAuth } = require("../middleware/requireAuth");
 
 const router = express.Router();
 
 // login route
 router.post("/login", loginUser);
 // signup route  (requires authorization)
-router.post("/", adminRequireAuth, createUser);
+router.post("/", createUser);
 
 // GET all users (requires authorization)
-router.get("/", requireAuth, getUsers);
+router.get("/", getUsers);
 
 // GET a single user (requires authorization)
-router.get("/:id", requireAuth, getUser);
+router.get("/:id", getUser);
 
 // DELETE a user (requires authorization)
 router.delete("/:id", adminRequireAuth, deleteUser);
