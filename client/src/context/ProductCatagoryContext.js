@@ -1,152 +1,63 @@
-import { createContext, useEffect, useState } from "react";
-import axios from "axios";
+import { createContext, useState } from "react";
 import { toast } from "react-toastify";
+import { sampleProductCatagories } from "../data/sampleData";
 
 const ProductCatagorysContext = createContext();
 
 const ProductCatagoryProvider = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const [productCatagories, setProductCatagories] = useState([]);
+  const [productCatagories, setProductCatagories] = useState(
+    sampleProductCatagories,
+  );
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchProductCatagories = async () => {
-    const response = await axios.get(
-      "http://localhost:4040/api/productCatagory"
-    );
-
-    setProductCatagories(response.data);
+  const fetchProductCatagories = () => {
+    // Data is already loaded from sampleData
+    setProductCatagories(sampleProductCatagories);
   };
 
-  const editProductCatagoryById = async (
+  const editProductCatagoryById = (
     id,
     newproductCatagoryName,
-    newProductNames
+    newProductNames,
   ) => {
     setIsLoading(true);
-    setError(null);
-    try {
-      const response = await axios.patch(
-        `http://localhost:4040/api/productCatagory/${id}`,
-        {
-          productCatagoryName: newproductCatagoryName,
-          productNames: newProductNames,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-            Role: user.role,
-          },
-        }
-      );
-      if (response.status !== 200) {
-        setError(response.data.error);
-        setIsLoading(false);
-        return false;
-      } else {
-        setError(null);
-        setIsLoading(false);
-        fetchProductCatagories();
-        toast.info("Product Catagory updated successfully");
-        return true;
-      }
-    } catch (error) {
-      if (error.response) {
-        setError(error.response.data.error);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        toast.error("Failed to update product catagory");
-        return false;
-      }
-    }
+    setProductCatagories((prev) =>
+      prev.map((cat) =>
+        cat._id === id
+          ? {
+              ...cat,
+              productCatagoryName: newproductCatagoryName,
+              productNames: newProductNames,
+            }
+          : cat,
+      ),
+    );
+    setIsLoading(false);
+    toast.info("Product Category updated successfully");
+    return true;
   };
 
-  const deleteProductCatagoryById = async (id) => {
-    try {
-      const response = await axios.delete(
-        `http://localhost:4040/api/productCatagory/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-            Role: user.role,
-          },
-        }
-      );
-
-      if (response.status !== 200) {
-        toast.error(response.data.error);
-      } else {
-        const updateProductCatagories = productCatagories.filter(
-          (productCatagory) => productCatagory._id !== id
-        );
-        setProductCatagories(updateProductCatagories);
-        toast.warning("Product Catagory deleted successfully");
-      }
-    } catch (error) {
-      if (error.response) {
-        toast.error(error.response.data.error);
-      } else {
-        toast.error("Failed to delete product catagory");
-      }
-    }
+  const deleteProductCatagoryById = (id) => {
+    setProductCatagories((prev) => prev.filter((cat) => cat._id !== id));
+    toast.warning("Product Category deleted successfully");
   };
 
-  const createProductCatagory = async (
-    productCatagoryName,
-    image,
-    productNames
-  ) => {
+  const createProductCatagory = (productCatagoryName, image, productNames) => {
     setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await axios.post(
-        "http://localhost:4040/api/productCatagory",
-        {
-          productCatagoryName,
-          image,
-          productNames,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-            Role: user.role,
-          },
-        }
-      );
-
-      if (response.status !== 200) {
-        setError(response.data.error);
-        setIsLoading(false);
-        return false;
-      } else {
-        setError(null);
-        setIsLoading(false);
-        fetchProductCatagories();
-        toast.success("Product Catagory created successfully");
-        return true;
-      }
-    } catch (error) {
-      if (error.response) {
-        setError(error.response.data.error);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        toast.error("Failed to create product catagory");
-        return false;
-      }
-    }
+    const newCat = {
+      _id: `cat_${Date.now()}`,
+      productCatagoryName,
+      image: image || {
+        url: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80",
+      },
+      productNames: productNames || [],
+    };
+    setProductCatagories((prev) => [...prev, newCat]);
+    setIsLoading(false);
+    toast.success("Product Category created successfully");
+    return true;
   };
-
-  // useEffect(() => {
-  //   const pollingInterval = 500; // Polling interval in milliseconds (e.g., every 5 seconds)
-  //   const intervalId = setInterval(fetchProductCatagories, pollingInterval);
-  //   return () => clearInterval(intervalId);
-  // }, []);
 
   const valueToShare = {
     error,

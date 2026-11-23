@@ -1,39 +1,35 @@
 import { createContext, useState } from "react";
+import { sampleUser } from "../data/sampleData";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
+  // Mock login — accepts any credentials, sets a sample admin user
   const login = async (email, password) => {
     setIsLoading(true);
     setError(null);
 
-    try {
-      const response = await fetch("http://localhost:4040/api/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const json = await response.json();
-      if (!response.ok) {
-        setIsLoading(false);
-        setError(json.error);
-        return false;
-      } else {
-        localStorage.setItem("user", JSON.stringify(json));
-        setUser(JSON.parse(localStorage.getItem("user")));
-        setIsLoading(false);
-        return true;
-      }
-    } catch (error) {
+    // Simulate a short network delay
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    if (!email || !password) {
       setIsLoading(false);
-      setError("An error occurred during login. Please try again later.");
+      setError("Please enter your email and password.");
       return false;
     }
+
+    // Accept any non-empty credentials and log in as the sample super-admin
+    const mockUser = { ...sampleUser };
+    localStorage.setItem("user", JSON.stringify(mockUser));
+    setUser(mockUser);
+    setIsLoading(false);
+    return true;
   };
+
   const valueToShare = {
     user,
     login,

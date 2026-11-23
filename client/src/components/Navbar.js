@@ -51,31 +51,7 @@ function NavBar() {
     navigate("/login");
   };
 
-  useEffect(() => {
-    user.store &&
-      fetch(`http://localhost:4040/api/store/${user.store}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-          Role: user.role,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => setStores(data));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // fecth varint from database
-  useEffect(() => {
-    fetchVariants();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // fecth varint from database
-  useEffect(() => {
-    fetchRequests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // No backend fetch needed — data is loaded from mock sample data
 
   // request under threshold and on progress
   const sentRequest = requests.filter((request) => {
@@ -445,7 +421,7 @@ function NavBar() {
                 variantUnderThreshold.map((variant) => {
                   const variantId = variant._id.toString(); // Convert variant._id to a string
                   const isSent = sentRequest.some(
-                    (request) => request.variantId === variantId
+                    (request) => request.variantId === variantId,
                   );
                   return (
                     <Box
@@ -598,7 +574,7 @@ function NavBar() {
                                 variant._id,
                                 variant.requestStatus === "Pending"
                                   ? true
-                                  : false
+                                  : false,
                               )
                             }
                             sx={styledButton}

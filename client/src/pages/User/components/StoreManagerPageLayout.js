@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { StoreManagerPageProvider } from "../../../context/CreateContext";
-import axios from "axios";
 import { toast } from "react-toastify";
+import { sampleUsers } from "../../../data/sampleData";
 
 function StoreManagerPageLayout({ children }) {
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const [storeManagers, setStoreManagers] = useState([]);
+  const [storeManagers, setStoreManagers] = useState(sampleUsers);
   const [rowToEdit, setRowToEdit] = useState(null);
   const [rowToDelete, setRowToDelete] = useState(null);
   const [formValues, setFormValues] = useState({
@@ -20,9 +18,11 @@ function StoreManagerPageLayout({ children }) {
     role: "",
   });
   const [openModal, setOpenModal] = useState(false);
+
   const handleModalOpen = () => {
     setOpenModal(true);
   };
+
   const handleModalClose = () => {
     setOpenModal(!openModal);
     setRowToEdit(null);
@@ -47,7 +47,7 @@ function StoreManagerPageLayout({ children }) {
     formValues.store = "";
   };
 
-  const AddNewStoreManager = async (
+  const AddNewStoreManager = (
     firstName,
     lastName,
     email,
@@ -55,95 +55,47 @@ function StoreManagerPageLayout({ children }) {
     gender,
     address,
     role,
-    store
+    store,
   ) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:4040/api/user",
-        {
-          firstName,
-          lastName,
-          email,
-          phoneNumber,
-          gender,
-          address,
-          role,
-          store,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-            Role: user.role,
-          },
-        }
-      );
-      if (response.status !== 200) {
-      } else {
-        clearForm();
-        fetch("http://localhost:4040/api/user", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-            Role: user.role,
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => setStoreManagers(data));
-        const updateStoreManager = [...storeManagers, response.data];
-        setStoreManagers(updateStoreManager);
-        setOpenModal(false);
-        toast.success("User succuessfully created.");
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to create store");
-    }
+    const newUser = {
+      _id: `user_${Date.now()}`,
+      name: `${firstName} ${lastName}`,
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      gender,
+      address,
+      role,
+      store,
+      isActive: true,
+    };
+    setStoreManagers((prev) => [...prev, newUser]);
+    clearForm();
+    setOpenModal(false);
+    toast.success("User successfully created.");
   };
 
   const handleUpdateModalOpen = (id) => {
     setRowToEdit(id);
-    const obj = storeManagers.find((storeManager) => storeManager._id === id);
-    formValues.firstName = obj.firstName;
-    formValues.lastName = obj.lastName;
-    formValues.gender = obj.gender;
+    const obj = storeManagers.find((sm) => sm._id === id);
+    formValues.firstName = obj.firstName || obj.name?.split(" ")[0] || "";
+    formValues.lastName = obj.lastName || obj.name?.split(" ")[1] || "";
+    formValues.gender = obj.gender || "";
     formValues.email = obj.email;
-    formValues.phoneNumber = obj.phoneNumber;
-    formValues.address = obj.address;
+    formValues.phoneNumber = obj.phoneNumber || "";
+    formValues.address = obj.address || "";
     formValues.role = obj.role;
     formValues.store = obj.store;
     handleModalOpen();
   };
 
-  const updateStoreManager = async (editedRow) => {
-    const response = await axios.patch(
-      `http://localhost:4040/api/user/${rowToEdit}`,
-      {
-        editedRow,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-          Role: user.role,
-        },
-      }
+  const updateStoreManager = (editedRow) => {
+    setStoreManagers((prev) =>
+      prev.map((sm) => (sm._id === rowToEdit ? { ...sm, ...editedRow } : sm)),
     );
-
-    if (response.status !== 200) {
-    } else {
-      fetch("http://localhost:4040/api/user", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-          Role: user.role,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => setStoreManagers(data));
-      handleModalClose();
-      toast.info("User updated Successfully");
-    }
+    handleModalClose();
+    toast.info("User updated successfully");
   };
 
   const handleDeleteDialogOpen = (id) => {
@@ -151,26 +103,10 @@ function StoreManagerPageLayout({ children }) {
     setOpenDialog(true);
   };
 
-  const deleteStoreManager = async () => {
-    const response = await axios.delete(
-      `http://localhost:4040/api/user/${rowToDelete}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-          Role: user.role,
-        },
-      }
-    );
-    if (response.status !== 200) {
-    } else {
-      const updatedStoreManagers = storeManagers.filter((storeManager) => {
-        return storeManager._id !== rowToDelete;
-      });
-      setStoreManagers(updatedStoreManagers);
-      handleDialogClose();
-      toast.warning("User Deleted Successfully");
-    }
+  const deleteStoreManager = () => {
+    setStoreManagers((prev) => prev.filter((sm) => sm._id !== rowToDelete));
+    handleDialogClose();
+    toast.warning("User deleted successfully");
   };
 
   const valueToshare = {
@@ -192,10 +128,12 @@ function StoreManagerPageLayout({ children }) {
     handleDialogClose,
     rowToDelete,
   };
+
   return (
     <StoreManagerPageProvider.Provider value={valueToshare}>
       {children}
     </StoreManagerPageProvider.Provider>
   );
 }
+
 export default StoreManagerPageLayout;

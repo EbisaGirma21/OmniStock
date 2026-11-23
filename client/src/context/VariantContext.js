@@ -1,25 +1,19 @@
-import { createContext, useEffect, useState } from "react";
-import axios from "axios";
+import { createContext, useState } from "react";
 import { toast } from "react-toastify";
+import { sampleVariants } from "../data/sampleData";
 
 const VariantsContext = createContext();
 
 const VariantProvider = ({ children }) => {
-  const [variants, setVariants] = useState([]);
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [variants, setVariants] = useState(sampleVariants);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchVariants = async () => {
-    try {
-      const response = await axios.get("http://localhost:4040/api/variant");
-      setVariants(response.data);
-    } catch (error) {
-      console.error("Error fetching transfers:", error);
-    }
+  const fetchVariants = () => {
+    // Data is already loaded from sampleData — no-op
   };
 
-  const editVariantById = async (
+  const editVariantById = (
     id,
     newProductName,
     newBrandName,
@@ -30,87 +24,39 @@ const VariantProvider = ({ children }) => {
     newAmount,
     newCondition,
     newGender,
-    newShortDescription
+    newShortDescription,
   ) => {
     setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await axios.patch(
-        `http://localhost:4040/api/variant/${id}`,
-        {
-          productName: newProductName,
-          brandName: newBrandName,
-          modelName: newModelName,
-          sizes: newSizes,
-          colors: newColors,
-          price: newPrice,
-          amount: newAmount,
-          condition: newCondition,
-          gender: newGender,
-          shortDescription: newShortDescription,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-            Role: user.role,
-          },
-        }
-      );
-
-      if (response.status !== 200) {
-      } else {
-        const updatedVariants = variants.map((variant) => {
-          if (variant.id === id) {
-            return { ...variant, ...response.data };
-          }
-          return variant;
-        });
-        fetchVariants();
-        setVariants(updatedVariants);
-        toast.info("Product updated successfully");
-      }
-    } catch (error) {
-      if (error.response) {
-        setError(error.response.data.error);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        toast.error("Failed to update product catagory");
-        return false;
-      }
-    }
-  };
-  const deleteVariantById = async (id) => {
-    try {
-      const response = await axios.delete(
-        `http://localhost:4040/api/variant/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-            Role: user.role,
-          },
-        }
-      );
-      if (response.status !== 200) {
-        toast.error(response.data.error);
-      } else {
-        fetchVariants();
-        toast.warning("Product deleted successfully");
-      }
-    } catch (error) {
-      if (error.response) {
-        toast.error(error.response.data.error);
-      } else {
-        toast.error("Failed to delete product");
-      }
-    }
+    setVariants((prev) =>
+      prev.map((v) =>
+        v._id === id
+          ? {
+              ...v,
+              productName: newProductName,
+              brandName: newBrandName,
+              modelName: newModelName,
+              sizes: newSizes,
+              colors: newColors,
+              price: newPrice,
+              amount: newAmount,
+              condition: newCondition,
+              gender: newGender,
+              shortDescription: newShortDescription,
+            }
+          : v,
+      ),
+    );
+    setIsLoading(false);
+    toast.info("Product updated successfully");
+    return true;
   };
 
-  // create variant
-  const createVariant = async (
+  const deleteVariantById = (id) => {
+    setVariants((prev) => prev.filter((v) => v._id !== id));
+    toast.warning("Product deleted successfully");
+  };
+
+  const createVariant = (
     productName,
     brandName,
     modelName,
@@ -123,65 +69,39 @@ const VariantProvider = ({ children }) => {
     gender,
     shortDescription,
     store,
-    productCatagory
+    productCatagory,
   ) => {
     setIsLoading(true);
-    setError(null);
-    try {
-      const response = await axios.post(
-        "http://localhost:4040/api/variant",
-        {
-          productName,
-          brandName,
-          modelName,
-          images,
-          sizes,
-          colors,
-          price,
-          amount,
-          condition,
-          gender,
-          shortDescription,
-          store,
-          productCatagory,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-            Role: user.role,
-          },
-        }
-      );
-
-      if (response.status !== 200) {
-        setError(response.data.error);
-        setIsLoading(false);
-        return false;
-      } else {
-        setError(null);
-        setIsLoading(false);
-        fetchVariants();
-        toast.success("Product Catagory created successfully");
-        return true;
-      }
-    } catch (error) {
-      if (error.response) {
-        setError(error.response.data.error);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        toast.error("Failed to create product catagory");
-        return false;
-      }
-    }
+    const newVariant = {
+      _id: `var_${Date.now()}`,
+      variantName: `${brandName} ${modelName}`,
+      productName,
+      brandName,
+      modelName,
+      images:
+        images && images.length > 0
+          ? images
+          : [
+              {
+                _id: "img_default",
+                url: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80",
+              },
+            ],
+      sizes,
+      colors,
+      price,
+      amount,
+      condition,
+      gender,
+      shortDescription,
+      store,
+      productCatagory,
+    };
+    setVariants((prev) => [...prev, newVariant]);
+    setIsLoading(false);
+    toast.success("Product created successfully");
+    return true;
   };
-
-  useEffect(() => {
-    const pollingInterval = 500; // Polling interval in milliseconds (e.g., every 5 seconds)
-    const intervalId = setInterval(fetchVariants, pollingInterval);
-    return () => clearInterval(intervalId);
-  }, []);
 
   const valueToShare = {
     error,

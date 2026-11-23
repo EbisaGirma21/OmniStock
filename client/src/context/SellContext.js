@@ -1,46 +1,29 @@
 import { createContext, useState } from "react";
-import axios from "axios";
+import { toast } from "react-toastify";
+import { sampleSells } from "../data/sampleData";
 
 const SellsContext = createContext();
 
 const SellProvider = ({ children }) => {
-  const [sells, setSells] = useState([]);
+  const [sells, setSells] = useState(sampleSells);
 
-  const user = JSON.parse(localStorage.getItem("user"));
-
-
-  const fetchSells = async () => {
-    const response = await axios.get("http://localhost:4040/api/sell",{
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.token}`,
-        Role: user.role,
-      },
-    });
-    setSells(response.data);
+  const fetchSells = () => {
+    setSells(sampleSells);
   };
 
-  const createSell = async (seller, variant, price, amount) => {
-    const response = await axios.post(
-      "http://localhost:4040/api/sell",
-      {
-        seller,
-        variant,
-        price,
-        amount,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-          Role: user.role,
-        },
-      }
-    );
-
-    const updatedSells = [...sells, response.data];
-    setSells(updatedSells);
+  const createSell = (seller, variant, price, amount) => {
+    const newSell = {
+      _id: `sell_${Date.now()}`,
+      seller,
+      variant,
+      price,
+      amount,
+      createdAt: new Date().toISOString(),
+    };
+    setSells((prev) => [...prev, newSell]);
+    toast.success("Sale recorded successfully");
   };
+
   const valueToShare = {
     sells,
     createSell,

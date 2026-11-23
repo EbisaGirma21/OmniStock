@@ -1,45 +1,29 @@
 import { createContext, useState } from "react";
-import axios from "axios";
+import { toast } from "react-toastify";
+import { samplePurchases } from "../data/sampleData";
 
 const PurchasesContext = createContext();
 
 const PurchaseProvider = ({ children }) => {
-  const [purchases, setPurchases] = useState([]);
+  const [purchases, setPurchases] = useState(samplePurchases);
 
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const fetchPurchases = async () => {
-    const response = await axios.get("http://localhost:4040/api/purchase", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.token}`,
-        Role: user.role,
-      },
-    });
-    setPurchases(response.data);
+  const fetchPurchases = () => {
+    setPurchases(samplePurchases);
   };
 
-  const createPurchase = async (purchaser, variant, price, amount) => {
-    const response = await axios.post(
-      "http://localhost:4040/api/purchase",
-      {
-        purchaser,
-        variant,
-        price,
-        amount,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-          Role: user.role,
-        },
-      }
-    );
-
-    const updatedPurchases = [...purchases, response.data];
-    setPurchases(updatedPurchases);
+  const createPurchase = (purchaser, variant, price, amount) => {
+    const newPurchase = {
+      _id: `pur_${Date.now()}`,
+      purchaser,
+      variant,
+      price,
+      amount,
+      createdAt: new Date().toISOString(),
+    };
+    setPurchases((prev) => [...prev, newPurchase]);
+    toast.success("Purchase recorded successfully");
   };
+
   const valueToShare = {
     purchases,
     createPurchase,

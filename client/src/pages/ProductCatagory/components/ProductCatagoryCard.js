@@ -1,81 +1,54 @@
-import { styled } from "@mui/material/styles";
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Collapse from "@mui/material/Collapse";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useState } from "react";
+import {
+  Box,
+  Card,
+  Chip,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useState } from "react";
 import ProductCatagoryDelete from "./ProductCatagoryDelete";
 import ProductCatagoryUpdate from "./ProductCatagoryUpdate";
 import { Link } from "react-router-dom";
 
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
-
 export default function ProductCatagoryCard({ productCatagory }) {
-  const [expanded, setExpanded] = useState(false);
-  // component states
   const [deleteOpen, setdDeleteOpen] = useState(false);
   const [editOpen, setdEditOpen] = useState(false);
   const [productCatagoryId, setProductCatagoryId] = useState("");
+
   const user = JSON.parse(localStorage.getItem("user"));
   const path = "http://localhost:3000/productCatagory";
   const currentUrl = window.location.href;
 
-  // toggler funcions
-  // funtions open delete modal
-  const handleDeleteOpen = () => {
-    setdDeleteOpen(true);
-  };
-
-  // funtion close delete modal
+  const handleDeleteOpen = () => setdDeleteOpen(true);
   const handleDeleteClose = () => {
     setdDeleteOpen(false);
     setProductCatagoryId("");
   };
-
-  // delete handler
   const handleDeleteProductCatagory = (id) => {
     handleDeleteOpen();
     setProductCatagoryId(id);
   };
 
-  // funtions open edit modal
-  const handleEditOpen = () => {
-    setdEditOpen(true);
-  };
-
-  // funtion close Edit modal
+  const handleEditOpen = () => setdEditOpen(true);
   const handleEditClose = () => {
     setdEditOpen(false);
     setProductCatagoryId("");
   };
-
-  // edit handler
   const handleEditProductCatagory = (id) => {
     handleEditOpen();
     setProductCatagoryId(id);
   };
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
+  const handleCatagoryClick = (id) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    user.productCatagory = id;
+    localStorage.setItem("user", JSON.stringify(user));
   };
 
-  // toggle delete modal
   let content = "";
   if (deleteOpen) {
     content = (
@@ -95,80 +68,178 @@ export default function ProductCatagoryCard({ productCatagory }) {
       />
     );
   }
-  const handleCatagoryClick = (id) => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    user.productCatagory = id;
-    localStorage.setItem("user", JSON.stringify(user));
-  };
+
+  const canSeeMore =
+    ((user.role === "admin" || user.role === "super") && currentUrl !== path) ||
+    user.role === "sm";
 
   return (
-    <Card className="h-96 w-182">
-      <CardHeader
-        key={productCatagory._id}
-        title={productCatagory.productCatagoryName}
-        action={
-          <>
-            <IconButton
-              onClick={() => {
-                handleEditProductCatagory(productCatagory._id);
-              }}
-            >
-              <EditOutlinedIcon />
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                handleDeleteProductCatagory(productCatagory._id);
-              }}
-            >
-              <DeleteForeverOutlinedIcon />
-            </IconButton>
-          </>
-        }
-      />
-      {content}
-      <CardMedia
-        component="img"
-        image={productCatagory.image.url}
-        alt="Paella dish"
-        className="h-64 w-64"
-        sx={{
-          objectFit: "contain",
-          transition: "transform 0.2s",
-          "&:hover": {
-            transform: "scale(1.1)",
-          },
-        }}
-      />
-      <CardActions disableSpacing>
-        {(((user.role === "admin" || user.role === "super") &&
-          currentUrl !== path) ||
-          user.role === "sm") && (
-          <Link
-            onClick={() => {
-              handleCatagoryClick(productCatagory._id);
-            }}
-            to={`:${productCatagory.productCatagoryName}`}
-          >
-            See more {productCatagory.productCatagoryName}
-          </Link>
-        )}
-
-        <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
+    <Card
+      elevation={0}
+      sx={{
+        borderRadius: "20px",
+        border: "1px solid #f0eef8",
+        overflow: "hidden",
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0 12px 36px rgba(94,53,177,0.13)",
+        },
+        bgcolor: "#fff",
+        position: "relative",
+      }}
+    >
+      {/* Admin action buttons */}
+      {(user.role === "admin" || user.role === "super") && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+            display: "flex",
+            gap: 0.5,
+            zIndex: 2,
+          }}
         >
-          <ExpandMoreIcon />
-        </ExpandMore>
-      </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography paragraph>
-            {productCatagory.productCatagoryName}
+          <Tooltip title="Edit category">
+            <IconButton
+              size="small"
+              onClick={() => handleEditProductCatagory(productCatagory._id)}
+              sx={{
+                bgcolor: "rgba(255,255,255,0.9)",
+                backdropFilter: "blur(4px)",
+                "&:hover": { bgcolor: "#EDE7F6", color: "#5e35b1" },
+                width: 32,
+                height: 32,
+              }}
+            >
+              <EditOutlinedIcon sx={{ fontSize: "1rem" }} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete category">
+            <IconButton
+              size="small"
+              onClick={() => handleDeleteProductCatagory(productCatagory._id)}
+              sx={{
+                bgcolor: "rgba(255,255,255,0.9)",
+                backdropFilter: "blur(4px)",
+                "&:hover": { bgcolor: "#ffebee", color: "#f44336" },
+                width: 32,
+                height: 32,
+              }}
+            >
+              <DeleteForeverOutlinedIcon sx={{ fontSize: "1rem" }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
+
+      {content}
+
+      {/* Category image */}
+      <Box
+        sx={{
+          position: "relative",
+          bgcolor: "#f3f0fb",
+          height: 180,
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src={productCatagory.image.url}
+          alt={productCatagory.productCatagoryName}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transition: "transform 0.35s",
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.transform = "scale(1.07)")
+          }
+          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        />
+      </Box>
+
+      {/* Card content */}
+      <Box sx={{ p: 2 }}>
+        <Typography
+          sx={{
+            fontWeight: 700,
+            fontSize: "1.05rem",
+            color: "#1a1a2e",
+            mb: 1,
+          }}
+        >
+          {productCatagory.productCatagoryName}
+        </Typography>
+
+        {/* Sub-category chips */}
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.6, mb: 2 }}>
+          {productCatagory.productNames.slice(0, 4).map((p) => (
+            <Chip
+              key={p._id}
+              label={p.name}
+              size="small"
+              sx={{
+                bgcolor: "#EDE7F6",
+                color: "#5e35b1",
+                fontWeight: 600,
+                fontSize: "0.65rem",
+                height: "22px",
+              }}
+            />
+          ))}
+          {productCatagory.productNames.length > 4 && (
+            <Chip
+              label={`+${productCatagory.productNames.length - 4} more`}
+              size="small"
+              sx={{
+                bgcolor: "#f5f5f5",
+                color: "#9e9e9e",
+                fontSize: "0.65rem",
+                height: "22px",
+              }}
+            />
+          )}
+        </Box>
+
+        {/* Footer row */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography sx={{ fontSize: "0.72rem", color: "#9e9e9e" }}>
+            {productCatagory.productNames.length} product types
           </Typography>
-        </CardContent>
-      </Collapse>
+          {canSeeMore && (
+            <Link
+              onClick={() => handleCatagoryClick(productCatagory._id)}
+              to={`:${productCatagory.productCatagoryName}`}
+              style={{ textDecoration: "none" }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.4,
+                  color: "#5e35b1",
+                  fontWeight: 700,
+                  fontSize: "0.78rem",
+                  "&:hover": { color: "#4527a0" },
+                  transition: "color 0.15s",
+                }}
+              >
+                Browse
+                <ArrowForwardIcon sx={{ fontSize: "0.85rem" }} />
+              </Box>
+            </Link>
+          )}
+        </Box>
+      </Box>
     </Card>
   );
 }
